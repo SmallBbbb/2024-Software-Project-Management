@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准首页</title>
+     <!-- 链接外部CSS样式表 -->
+    <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/regulations.css' %}">
+</head>
+<body>
+<!-- 引用外部JavaScript文件 -->
+<!-- 注意：确保jQuery在Bootstrap之前加载 -->
+<script src="{% static 'bootstrap-4.6.2-dist/jQuery/jQuery.js'%}"></script>
+<script src="{% static 'bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/regulations.js' %}"></script>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
+            <li class="nav-item active">
+                <a class="nav-link" href="i{% url 'message_view' %}">留言 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'regulations_view' %}">培训</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'exam_view' %}">考核授权</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'device_view' %}">设备</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sample_view' %}">规程</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'comparison_view' %}">比对测试</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准首页</title>
+    <!-- 链接外部CSS样式表 -->
+    <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+<!-- 引用外部JavaScript文件 -->
+<!-- 注意：确保jQuery在Bootstrap之前加载 -->
+<script src="{% static 'bootstrap-4.6.2-dist/jQuery/jQuery.js'%}"></script>
+<script src="{% static 'bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/index.js' %}"></script>
+
+<!-- 标题部分 -->
+<div class="container mt-5"> <!-- 使用container类来创建一个容器，并添加一些上边距 -->
+    <h2 class="custom-title">系统登录</h2> <!-- 使用h2标签和自定义的custom-title类 -->
+</div>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="modal" data-target="#loginModal">用户登录</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="modal" data-target="#adminModal">管理员登录</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- 登录模态框 -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">用户登录</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'index_view' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" id="loginButton">登录</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 管理员登录模态框 -->
+<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">管理员登录</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'index_view' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_admin_username">管理员账号</label>
+                        <input type="text" class="form-control" id="id_admin_username" name="admin_username" placeholder="请输入管理员账号">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_admin_password">密码</label>
+                        <input type="password" class="form-control" id="id_admin_password" name="admin_password" placeholder="请输入密码">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary">登录</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

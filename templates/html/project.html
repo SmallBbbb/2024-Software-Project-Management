@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准首页</title>
+    <!-- 链接外部CSS样式表 -->
+    <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/project.css' %}">
+</head>
+<body>
+<!-- 引用外部JavaScript文件 -->
+<!-- 注意：确保jQuery在Bootstrap之前加载 -->
+<script src="{% static 'bootstrap-4.6.2-dist/jQuery/jQuery.js'%}"></script>
+<script src="{% static 'bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/project.js' %}"></script>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">样品 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="standards.html">项目</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- 标准动态列表 -->
+<button class="btn btn-primary mt-3" onclick="addStandard()">添加标准</button>
+<div class="container mt-5">
+    <h2 class="mb-4">标准列表</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">标题</th>
+                <th scope="col">描述</th>
+                <th scope="col">完成</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr onclick="location.href='{{ task.url }}'">
+                <th scope="row">{{ task.id }}</th>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>
+                    {% if task.completed %}
+                    <span class="text-success">✓</span>
+                    {% else %}
+                    <span class="text-danger">✗</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
