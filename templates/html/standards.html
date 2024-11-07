@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>项目主页</title>
+    <title>标准</title>
     <!-- 链接外部CSS样式表 -->
     <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/standards.css' %}">
@@ -24,115 +24,78 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">首页 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{% url 'index_view'%}">首页 <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="standards.html">标准</a>
+                <a class="nav-link" href="{% url 'standards_view'%}">标准</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="message.html">留言反馈</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="modal" data-target="#loginModal">用户登录</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="modal" data-target="#adminModal">管理员登录</a>
+                <a class="nav-link" href="{% url 'message_view'%}">留言反馈</a>
             </li>
         </ul>
     </div>
 </nav>
-
-<!-- 登录模态框 -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">用户登录</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="username">用户名</label>
-                        <input type="text" class="form-control" id="username" placeholder="请输入用户名">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">密码</label>
-                        <input type="password" class="form-control" id="password" placeholder="请输入密码">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary">登录</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 管理员登录模态框 -->
-<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">管理员登录</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="admin_username">管理员账号</label>
-                        <input type="text" class="form-control" id="admin_username" placeholder="请输入管理员账号">
-                    </div>
-                    <div class="form-group">
-                        <label for="admin_password">密码</label>
-                        <input type="password" class="form-control" id="admin_password" placeholder="请输入密码">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" onclick="JumpToUrl(admin.html)">登录</button>
-                <!-- 在这里加上一个判断逻辑，登录成功跳转到管理页面!-->
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- 触发模态框的按钮 -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#standardModal">
+   添加标准
+</button>
+<button class="btn btn-link" onclick="window.location.href=({% url 'project_view'%})">跳转到项目页面</button>
 <!-- 标准动态列表 -->
-<button class="btn btn-primary mt-3" onclick="addStandard()">添加标准</button>
 <div class="container mt-5">
     <h2 class="mb-4">标准列表</h2>
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">标题</th>
-                <th scope="col">描述</th>
-                <th scope="col">完成</th>
+                <th scope="col">大类</th>
+                <th scope="col">类别</th>
+                <th scope="col">项目名称</th>
+                <th scope="col">标准名称</th>
+                <th scope="col">标准号</th>
+                <th scope="col">条款号</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
-            {% for task in tasks %}
-            <tr onclick="location.href='{{ task.url }}'">
-                <th scope="row">{{ task.id }}</th>
-                <td>{{ task.title }}</td>
-                <td>{{ task.description }}</td>
+        {% for standard in standards %}
+            <tr>
+                <td>{{ standard.BroadCategory }}</td>
+                <td>{{ standard.Category }}</td>
+                <td>{{ standard.Project }}</td>
+                <td>{{ standard.StandardName }}</td>
+                <td>{{ standard.StandardNumber }}</td>
+                <td>{{ standard.ClauseNumber }}</td>
                 <td>
-                    {% if task.completed %}
-                    <span class="text-success">✓</span>
-                    {% else %}
-                    <span class="text-danger">✗</span>
-                    {% endif %}
+                    <button class="btn btn-link" onclick="goToProjectPage({% url 'project_view'%})">跳转到项目页面</button>
                 </td>
+            //跳转到标准对应的项目逻辑待填写
             </tr>
-            {% endfor %}
+                {% endfor %}
         </tbody>
     </table>
 </div>
+
+
+<!-- 模态框 -->
+<div class="modal fade" id="standardModal" tabindex="-1" role="dialog" aria-labelledby="standardModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standardModalLabel">添加标准</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- 渲染Django表单 -->
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-success">保存</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>样品</title>
+    <!-- 链接外部CSS样式表 -->
+    <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sample.css' %}">
+</head>
+<body>
+<!-- 引用外部JavaScript文件 -->
+<!-- 注意：确保jQuery在Bootstrap之前加载 -->
+<script src="{% static 'bootstrap-4.6.2-dist/jQuery/jQuery.js'%}"></script>
+<script src="{% static 'bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/sample.js' %}"></script>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'sample_view'%}">样品 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'project1_view'%}">项目</a>
+            </li>
+        </ul>
+    </div>
+</nav><!-- 触发模态框的按钮 -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sampleModal">
+   添加样品
+</button>
+<!-- 注意：这里我假设你有一个名为'sample_view'的URL，但你需要确保这个URL存在并且正确配置 -->
+<button class="btn btn-link" onclick="window.location.href='{% url 'sample_view' %}'">跳转到样品列表页面</button>
+<!-- 样品动态列表 -->
+<div class="container mt-5">
+    <h2 class="mb-4">样品列表</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">产品名称</th>
+                <th scope="col">规格型号</th>
+                <th scope="col">生产厂家</th>
+                <th scope="col">批号</th>
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for sample in samples %}
+            <tr>
+                <td>{{ sample.Sample }}</td>
+                <td>{{ sample.Specification }}</td>
+                <td>{{ sample.Manufacture }}</td>
+                <td>{{ sample.BatchNumber }}</td>
+                <td>
+                    <!-- 这里可以添加一个按钮来执行特定的操作，比如编辑或查看样品详情 -->
+                    <button class="btn btn-link" onclick="window.location.href='{% url 'sample_detail' sample.id %}'">查看详情</button>
+                    <!-- 注意：'sample_detail'是一个假设的URL名称，你需要确保这个URL存在并且正确配置，同时传递样品的ID作为参数 -->
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 模态框 -->
+<!-- 注意：我将模态框的ID从'standardModal'更改为'sampleModal'以避免与其他可能的模态框冲突 -->
+<div class="modal fade" id="sampleModal" tabindex="-1" role="dialog" aria-labelledby="sampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sampleModalLabel">添加样品</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- 这里应该渲染一个与样品模型相对应的Django表单 -->
+        <!-- 假设你有一个名为'SampleForm'的表单，它基于你的样品模型 -->
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }} <!-- 注意：这里我使用了'sample_form'作为表单变量的名称，你需要确保在视图中传递了这个变量，或者根据实际的表单变量名进行调整 -->
+          <button type="submit" class="btn btn-success">保存</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

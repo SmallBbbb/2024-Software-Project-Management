@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>标准首页</title>
+    <title>项目内容</title>
     <!-- 链接外部CSS样式表 -->
     <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/project.css' %}">
@@ -20,44 +20,83 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">样品 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{% url 'sample_view'%}">样品 <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="standards.html">项目</a>
+                <a class="nav-link" href="{% url 'project1_view'%}">项目</a>
             </li>
         </ul>
     </div>
 </nav>
-<!-- 标准动态列表 -->
-<button class="btn btn-primary mt-3" onclick="addStandard()">添加标准</button>
+<!-- 触发模态框的按钮 -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectModal">
+   添加项目
+</button>
+<!-- 注意：这里我假设你有一个名为'project_view'的URL，但你需要确保这个URL存在并且正确配置 -->
+<button class="btn btn-link" onclick="window.location.href='{% url 'project_view' %}'">跳转到项目列表页面</button>
+<!-- 项目动态列表 -->
 <div class="container mt-5">
-    <h2 class="mb-4">标准列表</h2>
+    <h2 class="mb-4">项目列表</h2>
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">标题</th>
-                <th scope="col">描述</th>
-                <th scope="col">完成</th>
+                <th scope="col">项目大类</th>
+                <th scope="col">项目类别</th>
+                <th scope="col">项目名称</th>
+                <th scope="col">标准名称</th>
+                <th scope="col">条款号</th>
+                <th scope="col">人</th>
+                <th scope="col">机</th>
+                <th scope="col">法</th>
+                <th scope="col">料</th>
+                <th scope="col">操作</th>
             </tr>
         </thead>
         <tbody>
-            {% for task in tasks %}
-            <tr onclick="location.href='{{ task.url }}'">
-                <th scope="row">{{ task.id }}</th>
-                <td>{{ task.title }}</td>
-                <td>{{ task.description }}</td>
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.BroadCategory }}</td>
+                <td>{{ project.Category }}</td>
+                <td>{{ project.Project }}</td>
+                <td>{{ project.StandardName }}</td>
+                <td>{{ project.ClauseNumber }}</td>
+                <td>{{ project.Staff }}</td>
+                <td>{{ project.Equipment }}</td>
+                <td>{{ project.Procedure }}</td>
+                <td>{{ project.Sample }}</td>
                 <td>
-                    {% if task.completed %}
-                    <span class="text-success">✓</span>
-                    {% else %}
-                    <span class="text-danger">✗</span>
-                    {% endif %}
+                    <!-- 这里可以添加一个按钮来执行特定的操作，比如编辑或查看项目详情 -->
+                    <button class="btn btn-link" onclick="window.location.href='{% url 'project_detail' project.id %}'">查看详情</button>
+                    <!-- 注意：'project_detail'是一个假设的URL名称，你需要确保这个URL存在并且正确配置，同时传递项目的ID作为参数 -->
                 </td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
+</div>
+
+<!-- 模态框 -->
+<!-- 注意：我将模态框的ID从'standardModal'更改为'projectModal'以避免与其他可能的模态框冲突 -->
+<div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="projectModalLabel">添加项目</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- 这里应该渲染一个与项目模型相对应的Django表单 -->
+        <!-- 假设你有一个名为'ProjectForm'的表单，它基于你的项目模型 -->
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }} <!-- 注意：这里我使用了'project_form'作为表单变量的名称，你需要确保在视图中传递了这个变量 -->
+          <button type="submit" class="btn btn-success">保存</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 </body>
 </html>

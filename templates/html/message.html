@@ -24,84 +24,17 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">首页 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{% url 'index_view'%}">首页 <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="standards.html">标准</a>
+                <a class="nav-link" href="{% url 'standards_view'%}">标准</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="message.html">留言反馈</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="modal" data-target="#loginModal">用户登录</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="modal" data-target="#adminModal">管理员登录</a>
+                <a class="nav-link" href="{% url 'message_view'%}">留言反馈</a>
             </li>
         </ul>
     </div>
 </nav>
-
-<!-- 登录模态框 -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">用户登录</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="username">用户名</label>
-                        <input type="text" class="form-control" id="username" placeholder="请输入用户名">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">密码</label>
-                        <input type="password" class="form-control" id="password" placeholder="请输入密码">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary">登录</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 管理员登录模态框 -->
-<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">管理员登录</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="admin_username">管理员账号</label>
-                        <input type="text" class="form-control" id="admin_username" placeholder="请输入管理员账号">
-                    </div>
-                    <div class="form-group">
-                        <label for="admin_password">密码</label>
-                        <input type="password" class="form-control" id="admin_password" placeholder="请输入密码">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" onclick="JumpToUrl(admin.html)">登录</button>
-                <!-- 在这里加上一个判断逻辑，登录成功跳转到管理页面!-->
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- 留言反馈动态列表 -->
 <div class="container mt-5">

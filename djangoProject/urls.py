@@ -19,6 +19,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from Project import views
+from django.urls import path, include
 
 # urls.py
 from django.urls import path
@@ -26,16 +27,6 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index_view, name='index_view'),
-    path('', views.admin_view, name='admin_view'),
-    path('', views.comparison_view, name='comparison_view'),
-    path('', views.device_view, name='device_view'),
-    path('', views.exam_view, name='exam_view'),
-    path('', views.message_view, name='message_view'),
-    path('', views.project_view, name='project_view'),
-    path('', views.project1_view, name='project1_view'),
-    path('', views.regulations_view, name='regulations_view'),
-    path('', views.sample_view, name='sample_view'),
-    path('', views.standards_view, name='standards_view'),
-    path('', views.training_view, name='training_view'),
+    path('', include('Project.urls')),  # 包含应用的urls.py
 ]
+
