@@ -111,3 +111,6 @@ def standards_view(request):
 def training_view(request):
     # 可以在这里处理一些数据或逻辑
     return render(request, 'html/training.html')
+def learn_view(request):
+    # 可以在这里处理一些数据或逻辑
+    return render(request, 'html/learn.html')

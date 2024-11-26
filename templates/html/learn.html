@@ -7,14 +7,14 @@
     <title>标准</title>
     <!-- 链接外部CSS样式表 -->
     <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/standards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/learning.css' %}">
 </head>
 <body>
 <!-- 引用外部JavaScript文件 -->
 <!-- 注意：确保jQuery在Bootstrap之前加载 -->
 <script src="{% static 'bootstrap-4.6.2-dist/jQuery/jQuery.js'%}"></script>
 <script src="{% static 'bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/standards.js' %}"></script>
+<script src="{% static 'js/learning.js' %}"></script>
 <!-- 标题部分 -->
 <div class="container mt-5"> <!-- 使用container类来创建一个容器，并添加一些上边距 -->
     <h2 class="custom-title">软件项目管理</h2> <!-- 使用h2标签和自定义的custom-title类 -->
@@ -38,14 +38,14 @@
         </ul>
     </div>
 </nav>
-<!-- 触发模态框的按钮 -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#standardModal">
-   添加标准
-</button>
-<button class="btn btn-link" onclick="window.location.href=({% url 'project_view'%})">跳转到项目页面</button>
-<!-- 标准动态列表 -->
+{#<!-- 触发模态框的按钮 -->#}
+{#<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#standardModal">#}
+{#   添加标准#}
+{#</button>#}
+{#<button class="btn btn-link" onclick="window.location.href=({% url 'project_view'%})">跳转到项目页面</button>#}
+<!-- 学习动态列表 -->
 <div class="container mt-5">
-    <h2 class="mb-4">标准列表</h2>
+    <h2 class="mb-4">学习列表</h2>
     <table class="table table-striped">
         <thead>
             <tr>

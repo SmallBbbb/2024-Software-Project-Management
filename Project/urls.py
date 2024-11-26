@@ -16,5 +16,6 @@ urlpatterns = [
     path('sample/', views.sample_view, name='sample_view'),
     path('standards/', views.standards_view, name='standards_view'),
     path('training/', views.training_view, name='training_view'),
+    path('learn/', views.learn_view, name='learn_view'),
     # 可以添加更多的URL模式
 ]
