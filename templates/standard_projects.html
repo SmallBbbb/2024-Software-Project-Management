@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ standard.StandardName }} - 项目列表</title>
+    <!-- 引入Bootstrap 4.6 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <a class="navbar-brand" href="{% url 'index_view' %}">软件项目管理</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_standard' %}">标准</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">留言反馈</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">学习</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- 页面内容 -->
+<div class="container my-5">
+    <h2>{{ standard.StandardName }} - 项目列表</h2>
+
+    <!-- 项目列表 -->
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>项目名称</th>
+                <th>项目描述</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.name }}</td>
+                <td>{{ project.description }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2">暂无项目</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 添加项目按钮 -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadProjectModal">
+        上传项目文件
+    </button>
+
+    <!-- 上传文件弹窗 -->
+    <div class="modal fade" id="uploadProjectModal" tabindex="-1" role="dialog" aria-labelledby="uploadProjectModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadProjectModalLabel">上传项目文件</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="project_file">选择 Excel 文件</label>
+                            <input type="file" class="form-control-file" id="project_file" name="project_file" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">上传</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 错误/成功消息 -->
+{% if messages %}
+    <div class="container my-3">
+        <div class="alert alert-info">
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endif %}
+
+<!-- 引入 JS 脚本 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

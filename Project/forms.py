@@ -6,7 +6,7 @@ from .models import Standard,Project,Sample
 class StandardForm(forms.ModelForm):
     class Meta:
         model = Standard
-        fields = ['BroadCategory', 'Category', 'Project', 'StandardName', 'StandardNumber', 'ClauseNumber']
+        fields = ['BroadCategory', 'Category', 'Project', 'StandardName', 'StandardNumber']
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project

@@ -97,10 +97,9 @@ class Certification(models.Model):
     ID	            INT	        标准在此表中的ID
     BroadCategory	TEXT(50)	标准所在的大类
     Category	    TEXT(50)	标准所在的具体类别
-    Project	    TEXT(50)	标准所规定的项目的名称
+    Project	        TEXT(50)	标准所规定的项目的名称
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
-    ClauseNumber	TEXT(50)	标准下的条款号
 注:Django默认为数据库表创建'ID'作为主键,无需在模型中进行额外定义
 '''
 class Standard(models.Model):
@@ -110,7 +109,6 @@ class Standard(models.Model):
     Project = models.CharField(max_length=50, null=False)
     StandardName = models.CharField(max_length=50, null=False)
     StandardNumber = models.CharField(max_length=50, null=False)
-    ClauseNumber = models.CharField(max_length=50, null=False)
 
     #约束
     class Meta:
@@ -121,14 +119,14 @@ class Standard(models.Model):
                     'Category',
                     'Project',
                     'StandardName',
-                    'StandardNumber',
-                    'ClauseNumber'),
+                    'StandardNumber'
+                    ),
                 name='UniqueStandard'
             )
         ]
 
     def __str__(self):
-        return self
+        return f"{self.StandardName} ({self.StandardNumber})"
 
 '''
 项目模型(Project)
@@ -145,8 +143,8 @@ class Standard(models.Model):
     Sample	        TEXT(200)	该项目的所需的待检测样品
 注:Django默认为数据库表创建'ID'作为主键,无需在模型中进行额外定义
 '''
-class Project(models.Model):
 
+class Project(models.Model):
     BroadCategory = models.CharField(max_length=50, null=False)
     Category = models.CharField(max_length=50, null=False)
     Project = models.CharField(max_length=50, null=False)
@@ -158,21 +156,22 @@ class Project(models.Model):
     Procedure = models.CharField(max_length=50, null=False)
     Sample = models.CharField(max_length=200, null=False)
 
+    # 设置 default 为一个已存在的标准实例
+    standard = models.ForeignKey(Standard, on_delete=models.CASCADE, related_name='projects', default=1)  # 假设 ID 为 1 的 Standard 是默认的
+
     def clean(self):
-        # 验证以下五元组是否确实对应 Standard 模型中的一行
         try:
             Standard.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
-                ClauseNumber=self.ClauseNumber
             )
         except Standard.DoesNotExist:
             raise ValidationError({'Standard': 'Standard does not exist.'})
 
     def __str__(self):
-        return self
+        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
 
 '''
 测试人员模型(TestStaff)
@@ -215,15 +214,15 @@ class TestStaff(models.Model):
             raise ValidationError({'Name': 'User does not exist.'})
         # 验证以下五元组是否确实对应 Standard 模型中的一行
         try:
-            Standard.objects.get(
+            Project.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
                 ClauseNumber=self.ClauseNumber
             )
-        except Standard.DoesNotExist:
-            raise ValidationError({'Standard': 'Standard does not exist.'})
+        except Project.DoesNotExist:
+            raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
         return self
@@ -270,15 +269,15 @@ class Equipment(models.Model):
     def clean(self):
         # 验证以下五元组是否确实对应 Standard 模型中的一行
         try:
-            Standard.objects.get(
+            Project.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
                 ClauseNumber=self.ClauseNumber
             )
-        except Standard.DoesNotExist:
-            raise ValidationError({'Standard': 'Standard does not exist.'})
+        except Project.DoesNotExist:
+            raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
         return self
@@ -305,15 +304,15 @@ class Regulation(models.Model):
 
     def clean(self):
         try:
-            Standard.objects.get(
+            Project.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
                 ClauseNumber=self.ClauseNumber
             )
-        except Standard.DoesNotExist:
-            raise ValidationError({'Standard': 'Standard does not exist.'})
+        except Project.DoesNotExist:
+            raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
         return self
@@ -355,15 +354,15 @@ class Comparison(models.Model):
         except User.DoesNotExist:
             raise ValidationError({'Applicant': 'User does not exist.'})
         try:
-            Standard.objects.get(
+            Project.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
                 ClauseNumber=self.ClauseNumber
             )
-        except Standard.DoesNotExist:
-            raise ValidationError({'Standard': 'Standard does not exist.'})
+        except Project.DoesNotExist:
+            raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
         return self
@@ -448,15 +447,15 @@ class EquipPurchase(models.Model):
             raise ValidationError({'Submitter': 'User does not exist.'})
         #确保对应标准在标准表中存在
         try:
-            Standard.objects.get(
+            Project.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
                 ClauseNumber=self.ClauseNumber
             )
-        except Standard.DoesNotExist:
-            raise ValidationError({'Standard': 'Standard does not exist.'})
+        except Project.DoesNotExist:
+            raise ValidationError({'Project': 'Project does not exist.'})
         #确保对应设备在设备表中存在
         try:
             Equipment.objects.get(
@@ -515,15 +514,15 @@ class SamplePurchase(models.Model):
         except User.DoesNotExist:
             raise ValidationError({'Submitter': 'User does not exist.'})
         try:
-            Standard.objects.get(
+            Project.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
                 ClauseNumber=self.ClauseNumber
             )
-        except Standard.DoesNotExist:
-            raise ValidationError({'Standard': 'Standard does not exist.'})
+        except Project.DoesNotExist:
+            raise ValidationError({'Project': 'Project does not exist.'})
         try:
             Sample.objects.get(
                 Sample=self.Sample,
@@ -584,12 +583,33 @@ class Reminder(models.Model):
         except User.DoesNotExist:
             raise ValidationError({'Submitter': 'User does not exist.'})
         try:
-            Standard.objects.get(
+            Project.objects.get(
                 Category=self.Category,
                 Project=self.Project,
                 StandardName=self.StandardName,
                 StandardNumber=self.StandardNumber,
                 ClauseNumber=self.ClauseNumber
             )
-        except Standard.DoesNotExist:
-            raise ValidationError({'Standard': 'Standard does not exist.'})
+        except Project.DoesNotExist:
+            raise ValidationError({'Project': 'Project does not exist.'})
+
+'''
+学习资料表(Tutorial)
+    Category	    TEXT(50)	标准所在的具体类别
+    Project 	    TEXT(50)	标准所规定的项目的名称
+    StandardName	TEXT(50)	标准名称
+    StandardNumber	TEXT(50)	标准号
+    ClauseNumber	TEXT(50)	标准下的条款号
+    Tutorial                    教程文件
+'''
+
+'''
+试卷表(Paper)
+    Category	    TEXT(50)	标准所在的具体类别
+    Project 	    TEXT(50)	标准所规定的项目的名称
+    StandardName	TEXT(50)	标准名称
+    StandardNumber	TEXT(50)	标准号
+    ClauseNumber	TEXT(50)	标准下的条款号
+    Paper                       试卷文件
+    Type            TEXT(50)    试卷类型    
+'''

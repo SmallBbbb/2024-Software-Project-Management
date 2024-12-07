@@ -140,7 +140,7 @@ class Migration(migrations.Migration):
                 ('State', models.CharField(default='Pending', max_length=50)),
             ],
             options={
-                'constraints': [models.CheckConstraint(condition=models.Q(('State', 'Pending'), ('State', 'Finished'), _connector='OR'), name='CheckEquipPurchaseState')],
+                'constraints': [models.CheckConstraint(check=models.Q(State__in=['Pending', 'Finished']), name='CheckEquipPurchaseState')],
             },
         ),
         migrations.CreateModel(
@@ -160,7 +160,7 @@ class Migration(migrations.Migration):
                 ('State', models.CharField(default='Pending', max_length=20)),
             ],
             options={
-                'constraints': [models.CheckConstraint(condition=models.Q(('State', 'Pending'), ('State', 'Finished'), _connector='OR'), name='CheckReminderState')],
+                'constraints': [models.CheckConstraint(check=models.Q(State__in=['Pending', 'Finished']), name='CheckReminderState')],
             },
         ),
         migrations.CreateModel(
@@ -203,7 +203,7 @@ class Migration(migrations.Migration):
                 ('Identity', models.CharField(max_length=20)),
             ],
             options={
-                'constraints': [models.CheckConstraint(condition=models.Q(('Identity', 'SupportStaff'), ('Identity', 'TestStaff'), ('Identity', 'Administer'), ('Identity', 'PotentialCustomer'), _connector='OR'), name='CheckUserIdentity')],
+                'constraints': [models.CheckConstraint(check=models.Q(('Identity', 'SupportStaff'), ('Identity', 'TestStaff'), ('Identity', 'Administer'), ('Identity', 'PotentialCustomer'), _connector='OR'), name='CheckUserIdentity')],
             },
         ),
     ]

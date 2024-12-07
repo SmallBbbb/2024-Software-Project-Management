@@ -4,58 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>标准</title>
-    <!-- 链接外部CSS样式表 -->
-    <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/standards.css' %}">
+    <title>标准管理</title>
+    <!-- 引入Bootstrap 4.6和自定义样式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/standards.css' %}" rel="stylesheet">
 </head>
 <body>
-<!-- 引用外部JavaScript文件 -->
-<!-- 注意：确保jQuery在Bootstrap之前加载 -->
-<script src="{% static 'bootstrap-4.6.2-dist/jQuery/jQuery.js'%}"></script>
-<script src="{% static 'bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/standards.js' %}"></script>
-<!-- 标题部分 -->
-<div class="container mt-5"> <!-- 使用container类来创建一个容器，并添加一些上边距 -->
-    <h2 class="custom-title">软件项目管理</h2> <!-- 使用h2标签和自定义的custom-title类 -->
-</div>
-<!-- 导航栏 -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <a class="navbar-brand" href="{% url 'index_view' %}">软件项目管理</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="切换导航">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
+        <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="{% url 'index_view'%}">首页 <span class="sr-only">(current)</span></a>
+                <a class="nav-link">首页</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'standards_view'%}">标准</a>
+                <a class="nav-link">标准</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'message_view'%}">留言反馈</a>
+                <a class="nav-link">留言反馈</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'learn_view'%}">学习</a>
+                <a class="nav-link">学习</a>
             </li>
         </ul>
     </div>
 </nav>
-<!-- 触发模态框的按钮 -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#standardModal">
-   添加标准
-</button>
-<button class="btn btn-link" onclick="window.location.href=({% url 'project_view'%})">跳转到项目页面</button>
-<!-- 标准动态列表 -->
-<div class="container mt-5">
-    <h2 class="mb-4">标准列表</h2>
-    <table class="table table-striped">
-        <thead>
+
+<!-- 页面内容 -->
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>标准列表</h2>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
             <tr>
-                <th scope="col">大类</th>
-                <th scope="col">类别</th>
-                <th scope="col">项目名称</th>
-                <th scope="col">标准名称</th>
-                <th scope="col">标准号</th>
-                <th scope="col">条款号</th>
-                <th scope="col"></th>
+                <th>大类</th>
+                <th>类别</th>
+                <th>项目名称</th>
+                <th>标准名称</th>
+                <th>标准号</th>
             </tr>
         </thead>
         <tbody>
@@ -66,39 +59,20 @@
                 <td>{{ standard.Project }}</td>
                 <td>{{ standard.StandardName }}</td>
                 <td>{{ standard.StandardNumber }}</td>
-                <td>{{ standard.ClauseNumber }}</td>
                 <td>
-                    <button class="btn btn-link" onclick="goToProjectPage({% url 'project_view'%})">跳转到项目页面</button>
+                    <a href="{% url 'project_view' %}" class="btn btn-link">跳转到项目页面</a>
                 </td>
-            //跳转到标准对应的项目逻辑待填写
             </tr>
-                {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
 </div>
 
 
-<!-- 模态框 -->
-<div class="modal fade" id="standardModal" tabindex="-1" role="dialog" aria-labelledby="standardModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="standardModalLabel">添加标准</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- 渲染Django表单 -->
-        <form method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-success">保存</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- 引入JS脚本 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/standards.js' %}"></script>
 
 </body>
 </html>

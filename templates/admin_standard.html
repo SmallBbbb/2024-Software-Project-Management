@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/standards.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <a class="navbar-brand" href="{% url 'index_view' %}">软件项目管理</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="切换导航">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'admin_standard' %}">标准</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">留言反馈</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">学习</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- 页面内容 -->
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>标准列表</h2>
+        <!-- 添加标准按钮 -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStandardModal">
+            添加新标准
+        </button>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>大类</th>
+                <th>类别</th>
+                <th>项目名称</th>
+                <th>标准名称</th>
+                <th>标准号</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for standard in standards %}
+            <tr>
+                <td>{{ standard.BroadCategory }}</td>
+                <td>{{ standard.Category }}</td>
+                <td>{{ standard.Project }}</td>
+                <td>{{ standard.StandardName }}</td>
+                <td>{{ standard.StandardNumber }}</td>
+                <td>
+                    <a href="{% url 'standard_projects' standard.id %}" class="btn btn-link">跳转到项目页面</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 添加标准的弹窗 -->
+    <div class="modal fade" id="addStandardModal" tabindex="-1" role="dialog" aria-labelledby="addStandardModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStandardModalLabel">添加新标准</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'upload_standard' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                    <label for="standard_file">上传标准文件 (.xlsx)</label>
+                    <input type="file" class="form-control-file" id="standard_file" name="standard_file" accept=".xlsx">
+                </div>
+                <button type="submit" class="btn btn-primary">上传</button>
+            </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 错误弹窗 -->
+    {% if error_message %}
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="errorModalLabel">上传错误</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {{ error_message }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 页面加载后自动显示错误弹窗
+            $('#errorModal').modal('show');
+        </script>
+    {% endif %}
+</div>
+
+<!-- 引入JS脚本 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/standards.js' %}"></script>
+
+</body>
+</html>

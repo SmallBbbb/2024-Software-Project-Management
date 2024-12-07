@@ -5,25 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>系统登录</title>
-    <!-- 链接外部CSS样式表 -->
-    <link rel="stylesheet" href="{% static 'bootstrap-4.6.2-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <!-- 引入Bootstrap 4.6和自定义样式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/index.css' %}" rel="stylesheet">
 </head>
 <body>
-<!-- 引用外部JavaScript文件 -->
-<!-- 注意：确保jQuery在Bootstrap之前加载 -->
-<script src="{% static 'bootstrap-4.6.2-dist/jQuery/jQuery.js'%}"></script>
-<script src="{% static 'bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/index.js' %}"></script>
 
-<!-- 标题部分 -->
-<div class="container mt-5"> <!-- 使用container类来创建一个容器，并添加一些上边距 -->
-    <h2 class="custom-title">系统登录</h2> <!-- 使用h2标签和自定义的custom-title类 -->
-</div>
-<!-- 导航栏 -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <a class="navbar-brand" href="{% url 'index_view' %}">系统登录</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="切换导航">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav"> <!-- 移除了 ml-auto -->
+        <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="nav-link" data-toggle="modal" data-target="#loginModal">用户登录</a>
             </li>
@@ -33,6 +28,17 @@
         </ul>
     </div>
 </nav>
+
+<!-- 页面主体 -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">欢迎使用系统</h2>
+            <p class="text-center text-muted">请选择登录方式</p>
+        </div>
+    </div>
+</div>
+
 <!-- 登录模态框 -->
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -55,7 +61,7 @@
                         <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required>
                     </div>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                    <button type="submit" class="btn btn-primary" id="loginButton">登录</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="loginButton">登录</button>
                 </form>
             </div>
         </div>
@@ -63,11 +69,11 @@
 </div>
 
 <!-- 管理员登录模态框 -->
-<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="adminModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">管理员登录</h5>
+                <h5 class="modal-title" id="adminModalLabel">管理员登录</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -77,18 +83,24 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="id_admin_username">管理员账号</label>
-                        <input type="text" class="form-control" id="id_admin_username" name="admin_username" placeholder="请输入管理员账号">
+                        <input type="text" class="form-control" id="id_admin_username" name="admin_username" placeholder="请输入管理员账号" required>
                     </div>
                     <div class="form-group">
                         <label for="id_admin_password">密码</label>
-                        <input type="password" class="form-control" id="id_admin_password" name="admin_password" placeholder="请输入密码">
+                        <input type="password" class="form-control" id="id_admin_password" name="admin_password" placeholder="请输入密码" required>
                     </div>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                    <button type="submit" class="btn btn-primary">登录</button>
+                    <button type="submit" class="btn btn-primary btn-block">登录</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 引入JS脚本 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/index.js' %}"></script>
+
 </body>
 </html>
