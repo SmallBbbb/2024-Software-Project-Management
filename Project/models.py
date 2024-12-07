@@ -157,7 +157,7 @@ class Project(models.Model):
     Sample = models.CharField(max_length=200, null=False)
 
     # 设置 default 为一个已存在的标准实例
-    standard = models.ForeignKey(Standard, on_delete=models.CASCADE, related_name='projects', default=1)  # 假设 ID 为 1 的 Standard 是默认的
+    standard = models.ForeignKey(Standard, on_delete=models.CASCADE, related_name='projects')  # 假设 ID 为 1 的 Standard 是默认的
 
     def clean(self):
         try:
@@ -204,6 +204,9 @@ class TestStaff(models.Model):
     TestFile = models.CharField(max_length=100, null=False, unique=True)
     AuthCertification = models.CharField(max_length=100, null=False, unique=True)
 
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects1')
+
+
     def clean(self):
         # 验证 Name 是否确实对应 User 模型中的 Name
         try:
@@ -225,7 +228,7 @@ class TestStaff(models.Model):
             raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
-        return self
+        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
 
 '''
 设备模型(Equipment)
@@ -252,6 +255,9 @@ class Equipment(models.Model):
     Manufacturer = models.CharField(max_length=50, null=False)
     Photo = models.CharField(max_length=50, null=False)
     Detail = models.CharField(max_length=200, null=False)
+
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects2')
+
 
     class Meta:
         # 保证以下三元组的唯一性
@@ -280,7 +286,7 @@ class Equipment(models.Model):
             raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
-        return self
+        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
 
 '''
 规程表(Regulation)											
@@ -302,6 +308,9 @@ class Regulation(models.Model):
     ClauseNumber = models.CharField(max_length=50, null=False)
     Regulation = models.CharField(max_length=100, null=False)
 
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects3')
+
+
     def clean(self):
         try:
             Project.objects.get(
@@ -315,7 +324,7 @@ class Regulation(models.Model):
             raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
-        return self
+        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
 '''
 比对测试模型(Comparison)
     ID	            INT	        比对测试在本表中的ID
@@ -339,6 +348,9 @@ class Comparison(models.Model):
     ClauseNumber = models.CharField(max_length=50, null=False)
     StartDate = models.DateTimeField()
     FinishedDate = models.DateTimeField(blank=True, null=True)
+
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects4')
+
 
     def clean(self):
         if self.FinishedDate is None:
@@ -365,7 +377,7 @@ class Comparison(models.Model):
             raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
-        return self
+        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
 '''
 样品模型(Sample)
     ID	            INT	        样品在本表中的ID
