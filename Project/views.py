@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404
-from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison
+from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorials
 
 
 def index_view(request):
@@ -137,7 +137,6 @@ def standard_projects(request, standard_id):
                     try:
                         # 在数据库中创建新项目，并将其与正确的 Standard 关联
                         project = Project.objects.create(
-                            BroadCategory=broad_category,
                             Category=category,
                             Project=name,
                             StandardName=standard_name,
@@ -145,8 +144,40 @@ def standard_projects(request, standard_id):
                             ClauseNumber=clause_number,
                             standard=standard,  # 设置外键关联
                         )
-                        print(f"Created new project: {project.Project}")
 
+                        Tutorials.objects.create(
+                            Category=category,
+                            Project=name,
+                            StandardName=standard_name,
+                            StandardNumber=standard_number,
+                            ClauseNumber=clause_number,
+                            project=project  # 设置外键关联
+                        )
+                        Equipment.objects.create(
+                            Category=category,
+                            Project=name,
+                            StandardName=standard_name,
+                            StandardNumber=standard_number,
+                            ClauseNumber=clause_number,
+                            project=project  # 设置外键关联
+                        )
+                        Comparison.objects.create(
+                            Category=category,
+                            Project=name,
+                            StandardName=standard_name,
+                            StandardNumber=standard_number,
+                            ClauseNumber=clause_number,
+                            project=project  # 设置外键关联
+                        )
+                        Regulation.objects.create(
+                            BroadCategory=broad_category,
+                            Category=category,
+                            Project=name,
+                            StandardName=standard_name,
+                            StandardNumber=standard_number,
+                            ClauseNumber=clause_number,
+                            project=project  # 设置外键关联
+                        )
                     except Exception as e:
                         print(f"Error occurred while creating project {name}: {e}")
                         # 记录错误并向用户展示错误消息

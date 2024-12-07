@@ -246,15 +246,15 @@ class TestStaff(models.Model):
 '''
 class Equipment(models.Model):
 
-    Category = models.CharField(max_length=50, null=False)
-    Project = models.CharField(max_length=50, null=False)
-    StandardName = models.CharField(max_length=50, null=False)
-    StandardNumber = models.CharField(max_length=50, null=False)
-    ClauseNumber = models.CharField(max_length=50, null=False)
-    Equipment = models.CharField(max_length=50, null=False)
-    Manufacturer = models.CharField(max_length=50, null=False)
-    Photo = models.CharField(max_length=50, null=False)
-    Detail = models.CharField(max_length=200, null=False)
+    Category = models.CharField(max_length=50, null=True)
+    Project = models.CharField(max_length=50, null=True)
+    StandardName = models.CharField(max_length=50, null=True)
+    StandardNumber = models.CharField(max_length=50, null=True)
+    ClauseNumber = models.CharField(max_length=50, null=True)
+    Equipment = models.CharField(max_length=50, null=True)
+    Manufacturer = models.CharField(max_length=50, null=True)
+    Photo = models.CharField(max_length=50, null=True)
+    Detail = models.CharField(max_length=200, null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects2')
 
@@ -301,12 +301,12 @@ class Equipment(models.Model):
 '''
 class Regulation(models.Model):
 
-    Category = models.CharField(max_length=50, null=False)
-    Project = models.CharField(max_length=50, null=False)
-    StandardName = models.CharField(max_length=50, null=False)
-    StandardNumber = models.CharField(max_length=50, null=False)
-    ClauseNumber = models.CharField(max_length=50, null=False)
-    Regulation = models.CharField(max_length=100, null=False)
+    Category = models.CharField(max_length=50, null=True)
+    Project = models.CharField(max_length=50, null=True)
+    StandardName = models.CharField(max_length=50, null=True)
+    StandardNumber = models.CharField(max_length=50, null=True)
+    ClauseNumber = models.CharField(max_length=50, null=True)
+    Regulation = models.CharField(max_length=100, null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects3')
 
@@ -340,13 +340,13 @@ class Regulation(models.Model):
 '''
 class Comparison(models.Model):
 
-    Applicant = models.CharField(max_length=50, null=False)
+    Applicant = models.CharField(max_length=50, null=True)
     Category = models.CharField(max_length=50, null=False)
     Project = models.CharField(max_length=50, null=False)
     StandardName = models.CharField(max_length=50, null=False)
     StandardNumber = models.CharField(max_length=50, null=False)
     ClauseNumber = models.CharField(max_length=50, null=False)
-    StartDate = models.DateTimeField()
+    StartDate = models.DateTimeField(null=True)
     FinishedDate = models.DateTimeField(blank=True, null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects4')
@@ -389,10 +389,10 @@ class Comparison(models.Model):
 '''
 class Sample(models.Model):
 
-    Sample = models.CharField(max_length=50, null=False)
-    Specification = models.CharField(max_length=50, null=False)
-    Manufacturer = models.CharField(max_length=50, null=False)
-    BatchNumber = models.CharField(max_length=50, null=False)
+    Sample = models.CharField(max_length=50, null=True)
+    Specification = models.CharField(max_length=50, null=True)
+    Manufacturer = models.CharField(max_length=50, null=True)
+    BatchNumber = models.CharField(max_length=50, null=True)
 
     class Meta:
         constraints = [
@@ -606,22 +606,59 @@ class Reminder(models.Model):
             raise ValidationError({'Project': 'Project does not exist.'})
 
 '''
-学习资料表(Tutorial)
+学习资料表(Tutorials)
     Category	    TEXT(50)	标准所在的具体类别
     Project 	    TEXT(50)	标准所规定的项目的名称
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
     ClauseNumber	TEXT(50)	标准下的条款号
-    Tutorial                    教程文件
+    Tutorial        FILE        教程文件
 '''
 
+
+class Tutorials(models.Model):
+    Category = models.CharField(max_length=50, null=False)
+    Project = models.CharField(max_length=50, null=False)
+    StandardName = models.CharField(max_length=50, null=False)
+    StandardNumber = models.CharField(max_length=50, null=False)
+    ClauseNumber = models.CharField(max_length=50, null=False)
+    Tutorial = models.FileField(upload_to='Tutorial/')
+
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects5')
+
+    class Meta:
+        constraints = []
+
+    def __str__(self):
+        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
 '''
-试卷表(Paper)
+试卷表(Papers)
     Category	    TEXT(50)	标准所在的具体类别
     Project 	    TEXT(50)	标准所规定的项目的名称
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
     ClauseNumber	TEXT(50)	标准下的条款号
-    Paper                       试卷文件
+    Paper           FILE        试卷文件
     Type            TEXT(50)    试卷类型    
 '''
+class Papers(models.Model):
+    Category = models.CharField(max_length=50, null=False)
+    Project = models.CharField(max_length=50, null=False)
+    StandardName = models.CharField(max_length=50, null=False)
+    StandardNumber = models.CharField(max_length=50, null=False)
+    ClauseNumber = models.CharField(max_length=50, null=False)
+
+    Paper = models.FileField(upload_to='Papers/')
+    Type = models.CharField(max_length=50, null=False)
+
+    Papers = models.ForeignKey('Project', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check= models.Q(Type = 'blank')|
+                       models.Q(Type = 'submit')|
+                       models.Q(Type = 'response'),
+                name = 'CheckPaperType',
+            )
+        ]
