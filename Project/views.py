@@ -104,37 +104,50 @@ def standard_projects(request, standard_id):
     # 获取该标准下的所有项目
     projects = Project.objects.filter(standard=standard)
 
-    # 处理文件上传
     if request.method == 'POST' and request.FILES.get('project_file'):
         uploaded_file = request.FILES['project_file']
 
         # 验证文件类型
         if not uploaded_file.name.endswith('.xlsx'):
-            messages.error(request, "只支持上传 .xlsx 格式的文件")
+            error_message = "只支持上传 .xlsx 格式的文件"
         else:
             try:
-                # 加载Excel文件
+                # 加载 Excel 文件
                 wb = load_workbook(uploaded_file)
                 sheet = wb.active
 
-                # 假设Excel中的数据从第二行开始，第一行是标题
+                # 假设 Excel 中的数据从第二行开始，第一行是标题
                 for row in sheet.iter_rows(min_row=2, values_only=True):
-                    project_name, project_description = row
+                    # 获取 Excel 行数据
+                    broad_category, category, name, standard_name, standard_number, clause_number = row
 
-                    # 在数据库中创建新项目
+                    # 验证数据是否完整（可根据需要调整）
+                    if not all([broad_category, category, name, standard_name, standard_number, clause_number]):
+                        continue  # 跳过不完整的行
+
+                    # 在数据库中创建新项目（Project）
                     Project.objects.create(
-                        name=project_name,
-                        description=project_description,
-                        standard=standard  # 将项目与标准关联
+                        BroadCategory=broad_category,
+                        Category=category,
+                        Project=name,
+                        StandardName=standard_name,
+                        StandardNumber=standard_number,
+                        ClauseNumber=clause_number,
+                        Staff='',
+                        Equipment='',
+                        Procedure='',
+                        Sample='',
                     )
-                messages.success(request, "文件上传并处理成功！")
-                return render(request, 'standard_projects.html', {
-                    'standard': standard,
-                    'projects': projects
-                })
+
+                # 提示成功信息
+                messages.success(request, '文件上传成功，项目数据已导入。')
+                return redirect('standard_projects')  # 上传成功后跳转到标准页面
 
             except Exception as e:
-                messages.error(request, f"文件处理出错: {e}")
+                error_message = f"文件处理出错: {e}"
+
+        # 获取所有项目数据
+    projects = Project.objects.all()
 
     # 渲染模板，传递标准、项目
     return render(request, 'standard_projects.html', {

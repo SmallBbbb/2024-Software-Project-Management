@@ -29,25 +29,36 @@
 
 <!-- 页面内容 -->
 <div class="container my-5">
+    <!-- 添加返回按钮 -->
+    <a href="{% url 'admin_standard' %}" class="btn btn-secondary mb-4">返回标准列表</a>
+
     <h2>{{ standard.StandardName }} - 项目列表</h2>
 
     <!-- 项目列表 -->
     <table class="table table-bordered table-hover">
         <thead class="thead-light">
             <tr>
-                <th>项目名称</th>
-                <th>项目描述</th>
+                <th>大类</th>
+                <th>类别</th>
+                <th>产品/项目/参数名称</th>
+                <th>标准名称</th>
+                <th>标准编号</th>
+                <th>条款号</th>
             </tr>
         </thead>
         <tbody>
         {% for project in projects %}
             <tr>
-                <td>{{ project.name }}</td>
-                <td>{{ project.description }}</td>
+                <td>{{ project.BroadCategory }}</td>
+                <td>{{ project.Category }}</td>
+                <td>{{ project.Project }}</td>
+                <td>{{ project.StandardName }}</td>
+                <td>{{ project.StandardNumber }}</td>
+                <td>{{ project.ClauseNumber }}</td>
             </tr>
         {% empty %}
             <tr>
-                <td colspan="2">暂无项目</td>
+                <td colspan="6">暂无项目</td>
             </tr>
         {% endfor %}
         </tbody>

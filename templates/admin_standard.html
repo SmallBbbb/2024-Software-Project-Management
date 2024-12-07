@@ -61,7 +61,7 @@
                 <td>{{ standard.StandardName }}</td>
                 <td>{{ standard.StandardNumber }}</td>
                 <td>
-                    <a href="{% url 'standard_projects' standard.id %}" class="btn btn-link">跳转到项目页面</a>
+                    <a href="{% url 'standard_projects' standard.id %}" class="btn btn-link">进入该项目页面</a>
                 </td>
             </tr>
         {% endfor %}
@@ -82,6 +82,7 @@
                     <form action="{% url 'upload_standard' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-group">
+                    <p>请按照标准格式上传!</p>
                     <label for="standard_file">上传标准文件 (.xlsx)</label>
                     <input type="file" class="form-control-file" id="standard_file" name="standard_file" accept=".xlsx">
                 </div>
