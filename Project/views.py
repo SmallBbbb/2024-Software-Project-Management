@@ -1,23 +1,24 @@
+import io
 import os
 import shutil
 
+import openpyxl
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseBadRequest
 # views.py
-from django.shortcuts import render,redirect
 from django.contrib import messages
 
-from Project.forms import StandardForm, ProjectForm, SampleForm
-from openpyxl import load_workbook
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404
-from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorials
+from openpyxl.styles.alignment import Alignment
+from openpyxl.styles.fonts import Font
+
+from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial
 
 
 def index_view(request):
-    ''''''
     if request.method == 'POST':
                  return redirect('standards_view')  # 假设您有一个名为 'dashboard_view' 的视图
     return render(request, 'html/index.html')  # 确保这里的模板路径是正确的
@@ -37,6 +38,55 @@ def admin_standard(request):
 
 from openpyxl import load_workbook
 
+#下载可用于上传标准的模板.xlsx文件
+def download_standard_template(request):
+    # 创建一个新的工作簿和工作表
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "标准模板"
+
+    # 在工作表中写入一些示例数据
+    ws['A1'] = "broad_category"
+    ws['B1'] = "category"
+    ws['C1'] = "project"
+    ws['D1'] = "standard_name"
+    ws['E1'] = "standard_number"
+
+    for cell in ws[1]:  # 第一行是列名
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        # 自动调整列宽
+    for column in ws.columns:
+        max_length = 0
+        column_width = 0
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        column_width = (max_length + 2)  # +2 for some padding
+        ws.column_dimensions[cell.column_letter].width = column_width
+
+    # 使用 io.BytesIO 对象将工作簿保存到内存中
+    excel_stream = io.BytesIO()
+    wb.save(excel_stream)
+
+    # 重置流的位置到开头，以便可以读取它
+    excel_stream.seek(0)
+
+    # 设置响应头
+    response = HttpResponse(
+        excel_stream,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="standard_template.xlsx"'
+
+    # 关闭流（可选，因为 HttpResponse 会在发送完数据后自动关闭它）
+    # excel_stream.close()
+
+    return response
 def upload_standard(request):
     error_message = None
 
@@ -96,7 +146,56 @@ def upload_standard(request):
 
     return render(request, 'admin_standard.html', {'standards': standards, 'error_message': error_message})
 
+#下载可用于上传的项目模板文件(.xlsx)
+def download_project_template(request):
+    # 创建一个新的工作簿和工作表
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "项目模板"
 
+    # 在工作表中写入一些示例数据
+    ws['A1'] = "broad_category"
+    ws['B1'] = "category"
+    ws['C1'] = "project"
+    ws['D1'] = "standard_name"
+    ws['E1'] = "standard_number"
+    ws['F1'] = "clause_number"
+
+    for cell in ws[1]:  # 第一行是列名
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        # 自动调整列宽
+    for column in ws.columns:
+        max_length = 0
+        column_width = 0
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        column_width = (max_length + 2)  # +2 for some padding
+        ws.column_dimensions[cell.column_letter].width = column_width
+
+    # 使用 io.BytesIO 对象将工作簿保存到内存中
+    excel_stream = io.BytesIO()
+    wb.save(excel_stream)
+
+    # 重置流的位置到开头，以便可以读取它
+    excel_stream.seek(0)
+
+    # 设置响应头
+    response = HttpResponse(
+        excel_stream,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="project_template.xlsx"'
+
+    # 关闭流（可选，因为 HttpResponse 会在发送完数据后自动关闭它）
+    # excel_stream.close()
+
+    return response
 def standard_projects(request, standard_id):
     # 获取标准对象
     standard = get_object_or_404(Standard, id=standard_id)
@@ -144,8 +243,7 @@ def standard_projects(request, standard_id):
                             ClauseNumber=clause_number,
                             standard=standard,  # 设置外键关联
                         )
-
-                        Tutorials.objects.create(
+                        Tutorial.objects.create(
                             Category=category,
                             Project=name,
                             StandardName=standard_name,

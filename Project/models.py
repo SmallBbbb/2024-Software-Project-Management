@@ -606,7 +606,7 @@ class Reminder(models.Model):
             raise ValidationError({'Project': 'Project does not exist.'})
 
 '''
-学习资料表(Tutorials)
+学习资料表(Tutorial)
     Category	    TEXT(50)	标准所在的具体类别
     Project 	    TEXT(50)	标准所规定的项目的名称
     StandardName	TEXT(50)	标准名称
@@ -615,14 +615,13 @@ class Reminder(models.Model):
     Tutorial        FILE        教程文件
 '''
 
-
-class Tutorials(models.Model):
+class Tutorial(models.Model):
     Category = models.CharField(max_length=50, null=False)
     Project = models.CharField(max_length=50, null=False)
     StandardName = models.CharField(max_length=50, null=False)
     StandardNumber = models.CharField(max_length=50, null=False)
     ClauseNumber = models.CharField(max_length=50, null=False)
-    Tutorial = models.FileField(upload_to='Tutorial/')
+    Media = models.FileField(upload_to='Media/', null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects5')
 
@@ -632,7 +631,7 @@ class Tutorials(models.Model):
     def __str__(self):
         return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
 '''
-试卷表(Papers)
+试卷表(Paper)
     Category	    TEXT(50)	标准所在的具体类别
     Project 	    TEXT(50)	标准所规定的项目的名称
     StandardName	TEXT(50)	标准名称
@@ -641,7 +640,7 @@ class Tutorials(models.Model):
     Paper           FILE        试卷文件
     Type            TEXT(50)    试卷类型    
 '''
-class Papers(models.Model):
+class Paper(models.Model):
     Category = models.CharField(max_length=50, null=False)
     Project = models.CharField(max_length=50, null=False)
     StandardName = models.CharField(max_length=50, null=False)
@@ -651,14 +650,9 @@ class Papers(models.Model):
     Paper = models.FileField(upload_to='Papers/')
     Type = models.CharField(max_length=50, null=False)
 
-    Papers = models.ForeignKey('Project', on_delete=models.CASCADE)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check= models.Q(Type = 'blank')|
-                       models.Q(Type = 'submit')|
-                       models.Q(Type = 'response'),
-                name = 'CheckPaperType',
-            )
-        ]
+
+
+    def __str__(self):
+        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"

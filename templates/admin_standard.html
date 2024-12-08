@@ -78,6 +78,9 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+                <div class = "modal-body">
+                   <a href="{% url 'download_standard_template' %}" class="btn btn-primary">下载模板</a>
+                </div>
                 <div class="modal-body">
                     <form action="{% url 'upload_standard' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
