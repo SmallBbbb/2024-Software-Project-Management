@@ -44,10 +44,88 @@
         <h3>人</h3>
         <p>这里展示与“人”相关的内容...</p>
     </div>
+
     <div id="machine" class="mt-4 tab-content" style="display:none;">
-        <h3>机</h3>
+        <h3>设备列表</h3>
         <p>这里展示与“机”相关的内容...</p>
+        <!--添加设备按钮-->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEquipmentModal">
+            添加新设备
+        </button>
+        <!--设备列表-->
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>设备名称</th>
+                    <th>生产厂家</th>
+                    <th>设备图片</th>
+                    <th>设备详情</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipment in equipments %}
+                    <tr>
+                        <td>{{ equipment.Equipment }}</td>
+                        <td>{{ equipment.Manufacturer }}</td>
+                        <td><img src="{{ equipment.Photo }}" alt="设备图片"></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!--添加设备的弹窗-->
+        <div class="modal fade" id="addEquipmentModal" tabindex="-1" role="dialog" aria-labelledby="addEquipmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStandardModalLabel">添加新设备</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class = "modal-body">
+                   <form action="{% url 'add_equipment' project.id %}" method="post" enctype="multipart/form-data">
+                       {% csrf_token %}
+                       <div class="form-group">
+                           <label for="equipment_name">设备名称</label><br>
+                           <input type="text" class="form-check-label" id = "equipment_name" name="equipment_name"><br>
+                           <label for="equipment_manufacturer">生产厂家</label><br>
+                           <input type="text" class="form-check-label" id = "equipment_manufacturer" name="equipment_manufacturer"><br>
+                           <label for="equipment_photo">上传照片</label><br>
+                           <input type="file" class="form-control-file" id="equipment_photo" name="equipment_photo" accept="image/*"><br>
+                           <label for="equipment_detail">描述</label><br>
+                           <input type="text" class="form-control-lg" id="equipment_detail" name="equipment_detail"><br><br>
+                           <button type="submit" class="btn btn-primary">添加</button>
+                       </div>
+                   </form>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!--展示详情的弹窗-->
+{#    <div class="modal fade" id="showEquipmentDetailModal" tabindex="-1" role="dialog" aria-labelledby="showEquipmentDetailModal" aria-hidden="true">#}
+{#        <div class="modal-dialog" role="dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <h5 class="modal-title" id="showEquipmentDetailModalLabel">设备详情</h5>#}
+{#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#                        <span aria-hidden="true">&times;</span>#}
+{#                    </button>#}
+{#                </div>#}
+{#                <div class = "modal-body">#}
+{#                    <table class="table table-borderless table-hover">#}
+{#                        <tr>{{ equipment_detail.Equipment }}</tr>#}
+{#                        <tr>{{ equipment_detail.Manufacturer }}</tr>#}
+{#                        <tr><img src="{{ equipment_detail.Photo }}" alt="设备图片"> </tr>#}
+{#                        <tr>{{ equipment_detail.Detail }}</tr>#}
+{#                    </table>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{#    </div>#}
+
     <div id="material" class="mt-4 tab-content" style="display:none;">
         <h3>料</h3>
         <p>这里展示与“料”相关的内容...</p>
@@ -56,6 +134,7 @@
         <h3>法</h3>
         <p>这里展示与“法”相关的内容...</p>
     </div>
+</div>
 </div>
 
 <!-- 引入 JS 脚本 -->
@@ -82,8 +161,6 @@
 
 </body>
 </html>
-</title>
-</head>
 <body>
 
 </body>

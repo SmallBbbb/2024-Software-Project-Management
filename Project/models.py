@@ -253,7 +253,7 @@ class Equipment(models.Model):
     ClauseNumber = models.CharField(max_length=50, null=True)
     Equipment = models.CharField(max_length=50, null=True)
     Manufacturer = models.CharField(max_length=50, null=True)
-    Photo = models.CharField(max_length=50, null=True)
+    Photo = models.ImageField(upload_to='static/img', null=True, blank=True)
     Detail = models.CharField(max_length=200, null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects2')
@@ -286,7 +286,7 @@ class Equipment(models.Model):
             raise ValidationError({'Project': 'Project does not exist.'})
 
     def __str__(self):
-        return f"{self.Project} - {self.StandardName} ({self.StandardNumber})"
+        return f"{self.Project} - {self.Equipment}"
 
 '''
 规程表(Regulation)											

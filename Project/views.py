@@ -302,4 +302,39 @@ def standard_projects(request, standard_id):
 
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    return render(request, 'project_detail.html', {'project': project})
+    equipments = Equipment.objects.filter(project_id=project_id)
+    return render(request, 'project_detail.html', {'project': project,
+                                                                        'equipments': equipments})
+
+def add_equipment(request, project_id):
+    error_message = None
+    if request.method == 'POST' and request.FILES['equipment_photo']:
+        equipment = request.POST.get('equipment_name')
+        manufacturer = request.POST.get('equipment_manufacturer')
+        photo = request.FILES['equipment_photo']
+        detail = request.POST.get('equipment_detail')
+        project = get_object_or_404(Project, id=project_id)
+        print(f"{equipment}+{manufacturer}+{photo}+{detail}+{project_id}")
+        try:
+            newEquipment = Equipment.objects.create(
+                Category=project.Category,
+                Project=project.Project,
+                StandardName=project.StandardName,
+                StandardNumber=project.StandardNumber,
+                ClauseNumber=project.ClauseNumber,
+                Equipment=equipment,
+                Manufacturer=manufacturer,
+                Photo=photo,
+                Detail=detail,
+                project_id=project_id,
+            )
+            newEquipment.save()
+        except Exception as e:
+            print(f"Error occurred while creating project {equipment}: {e}")
+            # 记录错误并向用户展示错误消息
+            messages.error(request, f"创建项目 {equipment} 时出错: {e}")
+    equipments = Equipment.objects.filter(project_id=project_id)
+    return redirect("project_detail", {'equipments': equipments})
+def show_equipment_detail(request, equipment_id):
+    equipment_detail = get_object_or_404(Equipment, id=equipment_id)
+    return render(request, {'equipment_detail': equipment_detail})
