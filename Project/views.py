@@ -15,13 +15,68 @@ from django.shortcuts import render, get_object_or_404
 from openpyxl.styles.alignment import Alignment
 from openpyxl.styles.fonts import Font
 
-from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial
+from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, User
+
+
+def homepage(request):
+    return render(request, 'homepage.html')
+
+
+def user_signup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        # Check if passwords match
+        if password != confirm_password:
+            error_messages = "Passwords do not match"
+            return render(request, 'user_signup.html', {'error_messages': error_messages})
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            error_messages = "Username is already taken"
+            return render(request, 'user_signup.html', {'error_messages': error_messages})
+
+        # Check if email already exists
+        if User.objects.filter(email=email).exists():
+            error_messages = "Email is already registered"
+            return render(request, 'user_signup.html', {'error_messages': error_messages})
+
+        # Create the user
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.save()
+        return redirect('/user_login/')
+
+    return render(request, 'user_signup.html')
+
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            # 如果用户存在且密码正确，则登录用户
+            login(request, user)
+            # 获取用户的用户名
+            username = user.username
+            request.session['username'] = username
+            return render(request, 'homepage.html', {'username': username})  # 将用户名传递到模板中
+
+        else:
+            # 如果用户不存在或密码错误，则重新渲染登录页面并显示错误信息
+            error_message = "  Password or Username error"
+            return render(request, 'user_login.html', {'error_message': error_message})
+    else:
+        return render(request, 'user_login.html')
 
 
 def index_view(request):
     if request.method == 'POST':
                  return redirect('standards_view')  # 假设您有一个名为 'dashboard_view' 的视图
-    return render(request, 'html/index.html')  # 确保这里的模板路径是正确的
+    return render(request, 'html/user_login.html')  # 确保这里的模板路径是正确的
 def admin_view(request):
     # 可以在这里处理一些数据或逻辑
     return render(request, 'html/admin.html')

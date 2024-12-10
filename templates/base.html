@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 医疗设备检测系统 - {% block title %}{% endblock %}</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+<style>
+    .body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #faf9f6;
+    display: grid;
+    min-height: 100vh;
+}
+
+footer {
+    background-color: #24292e;
+    color: #dec674;
+    text-align: center;
+    padding: 5px;
+    bottom: 0;
+    width: 100%;
+    grid-column: span 2;
+    font-weight: bold;
+}
+
+#footer-content {
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 8px;
+    text-align: center;
+}
+
+</style>
+    {% block css_file %}
+        <!--通过继承的方式链接外部css样式文件-->
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+
+{% endblock %}
+
+<div id="empty-block">
+
+</div>
+
+<footer>
+    <div id="footer-content">
+        Copyright &copy; 2024 SmallB. All rights reserved.
+    </div>
+</footer>
+
+</body>
+</html>
