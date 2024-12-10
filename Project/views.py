@@ -21,6 +21,12 @@ from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation,
 def homepage(request):
     return render(request, 'homepage.html')
 
+def test_standard(request):
+    return render(request,'test_standard.html')
+
+def message(request):
+    return render(request,'message.html')
+
 
 def user_signup(request):
     if request.method == 'POST':
