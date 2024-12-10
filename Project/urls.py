@@ -15,8 +15,16 @@ urlpatterns = [
     path('download_project_template/', views.download_project_template, name='download_project_template'),
     path('standard/<int:standard_id>/projects/', views.standard_projects, name='standard_projects'),
     path('project/<int:project_id>/', views.project_detail, name='project_detail'),
+    path('project/<int:project_id>/upload_tutorial', views.upload_tutorial, name='upload_tutorial'),
     path('project/<int:project_id>/add_equipment', views.add_equipment, name='add_equipment'),
     path('<int:equipment_id>/show_equipment_detail', views.show_equipment_detail, name='show_equipment_detail'),
+    path('project/<int:project_id>/add_sample', views.add_sample, name='add_sample'),
+    path('project/<int:project_id>/download_regulation', views.download_regulation, name='download_regulation'),
+    path('project/<int:project_id>/create_comparison', views.create_comparison, name='create_comparison'),
+    path('<int:equipment_id>/start_comparison', views.start_comparison, name='start_comparison'),
+    path('<int:equipment_id>/cancel_comparison', views.cancel_comparison, name='cancel_comparison'),
+
+
 
 
     # 可以添加更多的URL模式

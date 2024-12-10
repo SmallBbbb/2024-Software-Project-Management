@@ -41,13 +41,67 @@
 
     <!-- 子页面内容 -->
     <div id="person" class="mt-4 tab-content" style="display:none;">
-        <h3>人</h3>
-        <p>这里展示与“人”相关的内容...</p>
+        <h3>测试人员列表</h3>
+
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>测试人员</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadTutorialModal">
+            上传学习资料
+        </button>
+        <h3>学习资料</h3>
+        <table class="table table-bordered">
+            <tbody>
+            {% for tutorial in tutorials %}
+                <tr>
+                    <th>
+                        <h4>{{ tutorial.Name }}</h4>
+                        <video width="320" height="240" controls>
+                            <source src="{{ tutorial.Media }}" type="video/mp4">
+                            你的浏览器不支持播放此视频
+                        </video>
+                    </th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <!--上传学习资料的弹窗-->
+        <div class="modal fade" id="uploadTutorialModal" tabindex="-1" role="dialog" aria-labelledby="uploadTutorialModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEquipmentModalLabel">上传学习资料</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class = "modal-body">
+                   <form action="{% url 'upload_tutorial' project.id %}" method="post" enctype="multipart/form-data">
+                       {% csrf_token %}
+                       <div class="form-group">
+                           <label for="tutorial_name">资料名称</label><br>
+                           <input type="text" class="form-control-input" id="tutorial_name" name="tutorial_name"><br>
+                           <label for="tutorial">上传教学视频(.MP4)</label>
+                           <input type="file" class="form-control-file" id="tutorial_media" name="tutorial_media" accept=".video/mp4">
+                       </div>
+                   </form>
+                </div>
+            </div>
+        </div>
+        </div>
+
     </div>
 
     <div id="machine" class="mt-4 tab-content" style="display:none;">
         <h3>设备列表</h3>
-        <p>这里展示与“机”相关的内容...</p>
         <!--添加设备按钮-->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEquipmentModal">
             添加新设备
@@ -78,7 +132,7 @@
         <div class="modal-dialog" role="dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addStandardModalLabel">添加新设备</h5>
+                    <h5 class="modal-title" id="addEquipmentModalLabel">添加新设备</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -89,8 +143,8 @@
                        <div class="form-group">
                            <label for="equipment_name">设备名称</label><br>
                            <input type="text" class="form-check-label" id = "equipment_name" name="equipment_name"><br>
-                           <label for="equipment_manufacturer">生产厂家</label><br>
-                           <input type="text" class="form-check-label" id = "equipment_manufacturer" name="equipment_manufacturer"><br>
+                           <label for="sample_manufacturer">生产厂家</label><br>
+                           <input type="text" class="form-check-label" id ="sample_manufacturer" name="equipment_manufacturer"><br>
                            <label for="equipment_photo">上传照片</label><br>
                            <input type="file" class="form-control-file" id="equipment_photo" name="equipment_photo" accept="image/*"><br>
                            <label for="equipment_detail">描述</label><br>
@@ -101,7 +155,7 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
     <!--展示详情的弹窗-->
 {#    <div class="modal fade" id="showEquipmentDetailModal" tabindex="-1" role="dialog" aria-labelledby="showEquipmentDetailModal" aria-hidden="true">#}
@@ -124,17 +178,121 @@
 {#            </div>#}
 {#        </div>#}
 {##}
-{#    </div>#}
+    </div>
 
     <div id="material" class="mt-4 tab-content" style="display:none;">
-        <h3>料</h3>
-        <p>这里展示与“料”相关的内容...</p>
+        <h3>样品列表</h3>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSampleModal">
+            添加样品
+        </button>
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>产品名称</th>
+                    <th>规格型号</th>
+                    <th>生产厂家</th>
+                    <th>批号</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sample in samples %}
+                    <tr>
+                        <td>{{ sample.Sample }}</td>
+                        <td>{{ sample.Specification }}</td>
+                        <td>{{ sample.Manufacturer }}</td>
+                        <td>{{ sample.BatchNumber }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="modal fade" id="addSampleModal" tabindex="-1" role="dialog" aria-labelledby="addSampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSampleModalLabel">添加新设备</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class = "modal-body">
+                   <form action="{% url 'add_sample' project.id %}" method="post" enctype="multipart/form-data">
+                       {% csrf_token %}
+                       <div class="form-group">
+                           <label for="sample_name">产品名称</label><br>
+                           <input type="text" class="form-check-label" id = "sample_name" name="sample_name"><br>
+                           <label for="sample_specification">规格型号</label><br>
+                           <input type="text" class="form-check-label" id = "sample_specification" name="sample_specification"><br>
+                           <label for="sample_manufacturer">生产厂家</label><br>
+                           <input type="text" class="form-check-label" id = "sample_manufacturer" name="sample_manufacturer"><br>
+                           <label for="sample_batchNumber">批号</label><br>
+                           <input type="text" class="form-control-lg" id="sample_batchNumber" name="sample_batchNumber"><br><br>
+                           <button type="submit" class="btn btn-primary">添加</button>
+                       </div>
+                   </form>
+                </div>
+            </div>
+        </div>
+        </div>
     </div>
     <div id="method" class="mt-4 tab-content" style="display:none;">
-        <h3>法</h3>
-        <p>这里展示与“法”相关的内容...</p>
+        <h3>比对测试列表</h3>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createComparisonModal">
+            新建比对测试
+        </button>
+
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>比对测试名称</th>
+                    <th>参加人员</th>
+                    <th>发起时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for comparison in comparisons %}
+                <tr>
+                    <td>{{ comparison.Name }}</td>
+                    <td>{{ comparison.Participant }}</td>
+                    <td>{{ comparison.StartTime }}</td>
+                    <td>
+                        <a href="{% url 'start_comparison' project.id %}" class="btn btn-primary">
+                            发起
+                        </a>
+                        <a href="{% url 'cancel_comparison' project.id %}" class="btn btn-primary">
+                            删除
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <!--新建比对测试模态框-->
+        <div class="modal fade" id="createComparisonModal" tabindex="-1" role="dialog" aria-labelledby="createComparisonModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEquipmentModalLabel">新建比对测试</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class = "modal-body">
+                   <form action="{% url 'create_comparison' project.id %}" method="post" enctype="multipart/form-data">
+                       {% csrf_token %}
+                       <div class="form-group">
+                           <label for="tutorial_name">测试名称</label><br>
+                           <input type="text" class="form-control-input" id="tutorial_name" name="tutorial_name"><br>
+                           <label for="tutorial_startTime">开始时间</label><br>
+                           <input type="date" class="form-control-input" id="tutorial_startTime" name="tutorial_startTime">
+                       </div>
+                   </form>
+                </div>
+            </div>
+        </div>
+        </div>
     </div>
-</div>
 </div>
 
 <!-- 引入 JS 脚本 -->
@@ -158,10 +316,6 @@
         selectedTab.style.display = 'block';
     }
 </script>
-
-</body>
-</html>
-<body>
 
 </body>
 </html>

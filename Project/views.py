@@ -358,9 +358,15 @@ def standard_projects(request, standard_id):
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     equipments = Equipment.objects.filter(project_id=project_id)
+    samples = Sample.objects.filter(project_id=project_id)
+    tutorials = Tutorial.objects.filter(project_id=project_id)
     return render(request, 'project_detail.html', {'project': project,
-                                                                        'equipments': equipments})
-
+                                                                        'equipments': equipments,
+                                                                        'samples': samples,
+                                                                        'tutorials': tutorials,
+                                                                        })
+def upload_tutorial(request, project_id):
+    return redirect("project_detail", project_id=project_id)
 def add_equipment(request, project_id):
     error_message = None
     if request.method == 'POST' and request.FILES['equipment_photo']:
@@ -369,7 +375,7 @@ def add_equipment(request, project_id):
         photo = request.FILES['equipment_photo']
         detail = request.POST.get('equipment_detail')
         project = get_object_or_404(Project, id=project_id)
-        print(f"{equipment}+{manufacturer}+{photo}+{detail}+{project_id}")
+        #print(f"{equipment}+{manufacturer}+{photo}+{detail}+{project_id}")
         try:
             newEquipment = Equipment.objects.create(
                 Category=project.Category,
@@ -385,11 +391,42 @@ def add_equipment(request, project_id):
             )
             newEquipment.save()
         except Exception as e:
-            print(f"Error occurred while creating project {equipment}: {e}")
+            print(f"Error occurred while adding equipment {equipment}: {e}")
             # 记录错误并向用户展示错误消息
-            messages.error(request, f"创建项目 {equipment} 时出错: {e}")
-    equipments = Equipment.objects.filter(project_id=project_id)
-    return redirect("project_detail", {'equipments': equipments})
+            messages.error(request, f"添加设备 {equipment} 时出错: {e}")
+    return redirect("project_detail", project_id = project_id)
 def show_equipment_detail(request, equipment_id):
     equipment_detail = get_object_or_404(Equipment, id=equipment_id)
     return render(request, {'equipment_detail': equipment_detail})
+
+def add_sample(request, project_id):
+    if request.method == 'POST' :
+        sample = request.POST.get('sample_name')
+        specification = request.POST.get('sample_specification')
+        manufacturer = request.POST.get('sample_manufacturer')
+        batchNumber = request.POST.get('sample_batchNumber')
+        try:
+            newSample = Sample.objects.create(
+                Sample=sample,
+                Specification=specification,
+                Manufacturer=manufacturer,
+                BatchNumber=batchNumber,
+                project_id=project_id,
+            )
+            newSample.save()
+        except Exception as e:
+            print(f"Error occurred while adding sample {sample}: {e}")
+            # 记录错误并向用户展示错误消息
+            messages.error(request, f"添加样品 {sample} 时出错: {e}")
+    return redirect("project_detail", project_id = project_id)
+
+def download_regulation(request, project_id):
+    return redirect("project_detail", project_id=project_id)
+def create_comparison(request, project_id):
+    return redirect("project_detail", project_id=project_id)
+def start_comparison(request, project_id):
+    return redirect("project_detail", project_id=project_id)
+def cancel_comparison(request, project_id):
+    return redirect("project_detail", project_id=project_id)
+
+

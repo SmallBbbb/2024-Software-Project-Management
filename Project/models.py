@@ -328,43 +328,31 @@ class Regulation(models.Model):
 '''
 比对测试模型(Comparison)
     ID	            INT	        比对测试在本表中的ID
-    Applicant	    TEXT(50)	申请人姓名
     Category	    TEXT(50)	标准所在的具体类别
     Project 	    TEXT(50)	标准所规定的项目的名称
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
     ClauseNumber	TEXT(50)	标准下的条款号
+    Comparison      TEXT(50)    比对测试名称
     StartDate	    DATETIME	比对测试的计划开始时间
-    FinishedDate	DATETIME	比对测试的实际完成时间
 注:Django默认为数据库表创建'ID'作为主键,无需在模型中进行额外定义
 '''
 class Comparison(models.Model):
 
-    Applicant = models.CharField(max_length=50, null=True)
     Category = models.CharField(max_length=50, null=False)
     Project = models.CharField(max_length=50, null=False)
     StandardName = models.CharField(max_length=50, null=False)
     StandardNumber = models.CharField(max_length=50, null=False)
     ClauseNumber = models.CharField(max_length=50, null=False)
+
+    Name = models.CharField(max_length=50, null=False)
     StartDate = models.DateTimeField(null=True)
-    FinishedDate = models.DateTimeField(blank=True, null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects4')
 
 
     def clean(self):
-        if self.FinishedDate is None:
-            pass
-        else:
-            if self.FinishedDate < self.StartDate:
-                raise ValidationError({'FinishedDate': 'FinishedDate must be later than StartDate.'})
 
-        try:
-            User.objects.get(
-                Name=self.Applicant,
-            )
-        except User.DoesNotExist:
-            raise ValidationError({'Applicant': 'User does not exist.'})
         try:
             Project.objects.get(
                 Category=self.Category,
@@ -393,6 +381,8 @@ class Sample(models.Model):
     Specification = models.CharField(max_length=50, null=True)
     Manufacturer = models.CharField(max_length=50, null=True)
     BatchNumber = models.CharField(max_length=50, null=True)
+
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects6')
 
     class Meta:
         constraints = [
