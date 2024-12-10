@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.4/dist/tailwind.min.css"/>
+    <link rel="stylesheet" href="{% static 'css/user.css' %}">
+</head>
+<body>
+
+<div class="relative min-h-screen flex">
+    <div class="flex flex-col sm:flex-row items-center md:items-start
+        sm:justify-center md:justify-start flex-auto min-w-0 bg-white">
+
+        <div class="sm:w-1/2 xl:w-3/5 h-full hidden md:flex flex-auto
+            items-center justify-center p-10 overflow-hidden
+            bg-purple-900 text-white bg-no-repeat bg-cover relative">
+
+            <div class="absolute bg-gradient-to-b from-indigo-600
+            to-blue-500 opacity-75 inset-0 z-0">
+            </div>
+
+            <div class="w-full max-w-md z-10">
+                <div class="sm:text-4xl xl:text-5xl font-bold leading-tight mb-6">
+                    医疗设备测试系统
+                </div>
+
+                <div class="sm:text-sm xl:text-md text-gray-200 font-normal">
+                    注册
+                </div>
+            </div>
+            <ul class="circles">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+
+        <div class="md:flex md:items-center md:justify-center w-full
+            sm:w-auto md:h-full w-2/5 xl:w-2/5 p-8 md:p-10 lg:p-14
+            sm:rounded-lg md:rounded-none bg-white">
+
+            <div class="max-w-md w-full mx-auto space-y-8">
+
+                <div class="text-center">
+                    <h2 class="mt-6 text-3xl font-bold text-gray-900">
+                        在此注册
+                    </h2>
+                </div>
+
+                <div class="flex items-center justify-center space-x-2">
+                    <span class="h-px w-16 bg-gray-200"></span>
+                    <span class="text-gray-300 font-normal">
+                        使用您的邮箱来注册
+                    </span>
+                    <span class="h-px w-16 bg-gray-200"></span>
+                </div>
+
+                <form class="mt-8 space-y-6" action="#" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="remember" value="true"/>
+                    <div class="relative">
+                        <label class="ml-3 text-sm font-bold text-gray-700 tracking-wide">
+                            用户名：
+                        </label>
+
+                        <input class="w-full text-base px-4 py-2 border-b border-gray-300
+                            focus:outline-none rounded-2xl focus:border-indigo-500"
+                               type="username" name="username"
+                               placeholder="Please input your UserName"/>
+
+                        <input type="hidden" name="remember" value="true"/>
+                        <div class="mt-8 relative">
+                            <label class="ml-3 text-sm font-bold text-gray-700 tracking-wide">
+                                Email:
+                            </label>
+                            <input class="w-full content-center text-base px-4
+                                py-2 border-b rounded-2xl border-gray-300
+                                focus:outline-none focus:border-indigo-500"
+                                   type="email" name="email"
+                                   placeholder="Please input your Email Address"
+                            />
+                        </div>
+
+                        <div class="mt-8 content-center">
+                            <label class="ml-3 text-sm font-bold text-gray-700 tracking-wide">
+                                密码：
+                            </label>
+                            <input class="w-full content-center text-base px-4
+                            py-2 border-b rounded-2xl border-gray-300
+                            focus:outline-none focus:border-indigo-500"
+                                   type="password" name="password"
+                                   placeholder="Please input your password"/>
+                        </div>
+
+                        <div class="mt-8 content-center">
+                            <label class="ml-3 text-sm font-bold text-gray-700 tracking-wide">
+                                确认密码：
+                            </label>
+                            <input class="w-full content-center text-base px-4
+                                py-2 border-b rounded-2xl border-gray-300
+                                focus:outline-none focus:border-indigo-500"
+                                   type="password"
+                                   name="confirm_password"
+                                   placeholder="Please confirm your password"/>
+                        </div>
+
+                        {% if error_messages %}
+                            <p class="text-red-500">{{ error_messages }}</p>
+                        {% endif %}
+
+                        <div>
+                            <button type="submit" class="mt-8 w-full flex justify-center bg-gradient-to-r
+                                from-indigo-500 to-blue-600 hover:bg-gradient-to-l
+                                hover:from-blue-500 hover:to-indigo-600 text-gray-100
+                                p-4 rounded-full tracking-wide font-semibold
+                                shadow-lg cursor-pointer transition ease-in duration-500">
+                                注册
+                            </button>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
