@@ -25,11 +25,12 @@
                 <a class="nav-link" href="{% url 'admin_standard' %}">标准</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'message' %}">留言反馈</a>
+                <a class="nav-link" href="{% url 'admin_message' %}">留言反馈</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">学习</a>
             </li>
+        </ul>
     </div>
 </nav>
 
@@ -72,11 +73,17 @@
             {% for tutorial in tutorials %}
                 <tr>
                     <th>
-                        <h4>{{ tutorial.Name }}</h4>
+                        <h4>{{ tutorial.Name }}
+                        </h4>
                         <video width="320" height="240" controls>
-                            <source src="{{ tutorial.Media }}" type="video/mp4">
-                            你的浏览器不支持播放此视频
+                            <source src="{{ tutorial.Media.url }}" type="video/mp4">
+                            您的浏览器不支持播放此视频
                         </video>
+                        <form action="{% url 'delete_tutorial' project.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="tutorial_id" value="{{ tutorial.id }}">
+                            <button type="submit" class="btn btn-danger">删除</button>
+                        </form>
                     </th>
                 </tr>
             {% endfor %}
@@ -99,7 +106,8 @@
                            <label for="tutorial_name">资料名称</label><br>
                            <input type="text" class="form-control-input" id="tutorial_name" name="tutorial_name"><br>
                            <label for="tutorial">上传教学视频(.MP4)</label>
-                           <input type="file" class="form-control-file" id="tutorial_media" name="tutorial_media" accept=".video/mp4">
+                           <input type="file" class="form-control-file" id="tutorial_media" name="tutorial_media" accept="video/mp4"><br>
+                           <button type="submit" class="btn btn-primary">确定</button>
                        </div>
                    </form>
                 </div>
@@ -256,7 +264,8 @@
                 <tr>
                     <th>比对测试名称</th>
                     <th>参加人员</th>
-                    <th>发起时间</th>
+                    <th>预计开始时间</th>
+                    <th>状态</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -265,14 +274,19 @@
                 <tr>
                     <td>{{ comparison.Name }}</td>
                     <td>{{ comparison.Participant }}</td>
-                    <td>{{ comparison.StartTime }}</td>
+                    <td>{{ comparison.StartDate }}</td>
+                    <td>{{ comparison.State }}</td>
                     <td>
-                        <a href="{% url 'start_comparison' project.id %}" class="btn btn-primary">
-                            发起
-                        </a>
-                        <a href="{% url 'cancel_comparison' project.id %}" class="btn btn-primary">
-                            删除
-                        </a>
+                        <form action="{% url 'start_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
+                            <button type = "submit" class = "btn btn-primary">开始</button>
+                        </form>
+                       <form action="{% url 'cancel_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                           <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
+                            <button type = "submit" class = "btn btn-primary">删除</button>
+                        </form>
                     </td>
                 </tr>
             {% endfor %}
@@ -283,7 +297,7 @@
         <div class="modal-dialog" role="dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addEquipmentModalLabel">新建比对测试</h5>
+                    <h5 class="modal-title" id="createComparisonModalLabel">新建比对测试</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -292,10 +306,11 @@
                    <form action="{% url 'create_comparison' project.id %}" method="post" enctype="multipart/form-data">
                        {% csrf_token %}
                        <div class="form-group">
-                           <label for="tutorial_name">测试名称</label><br>
-                           <input type="text" class="form-control-input" id="tutorial_name" name="tutorial_name"><br>
-                           <label for="tutorial_startTime">开始时间</label><br>
-                           <input type="date" class="form-control-input" id="tutorial_startTime" name="tutorial_startTime">
+                           <label for="comparison_name">测试名称</label><br>
+                           <input type="text" class="form-control-input" id="comparison_name" name="comparison_name"><br>
+                           <label for="comparison_startDate">开始时间</label><br>
+                           <input type="date" class="form-control-input" id="comparison_startDate" name="comparison_startDate"><br><br>
+                           <button type="submit" class="btn btn-primary">创建</button>
                        </div>
                    </form>
                 </div>

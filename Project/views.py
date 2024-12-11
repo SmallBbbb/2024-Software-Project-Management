@@ -12,10 +12,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404
+
 from openpyxl.styles.alignment import Alignment
 from openpyxl.styles.fonts import Font
 
-from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, User
+from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, User, Message
 
 
 def homepage(request):
@@ -24,8 +25,9 @@ def homepage(request):
 def test_standard(request):
     return render(request,'test_standard.html')
 
-def message(request):
-    return render(request,'message.html')
+def admin_message(request):
+    messages = Message.objects.all()
+    return render(request, 'admin_message.html', {'messages':messages})
 
 
 def user_signup(request):
@@ -77,17 +79,6 @@ def user_login(request):
             return render(request, 'user_login.html', {'error_message': error_message})
     else:
         return render(request, 'user_login.html')
-
-
-def index_view(request):
-    if request.method == 'POST':
-                 return redirect('standards_view')  # 假设您有一个名为 'dashboard_view' 的视图
-    return render(request, 'html/user_login.html')  # 确保这里的模板路径是正确的
-def admin_view(request):
-    # 可以在这里处理一些数据或逻辑
-    return render(request, 'html/admin.html')
-
-
 
 def admin_standard(request):
     # 获取所有标准
@@ -366,15 +357,42 @@ def project_detail(request, project_id):
     equipments = Equipment.objects.filter(project_id=project_id)
     samples = Sample.objects.filter(project_id=project_id)
     tutorials = Tutorial.objects.filter(project_id=project_id)
+    comparisons = Comparison.objects.filter(project_id=project_id)
     return render(request, 'project_detail.html', {'project': project,
                                                                         'equipments': equipments,
                                                                         'samples': samples,
                                                                         'tutorials': tutorials,
+                                                                        'comparisons':comparisons,
                                                                         })
 def upload_tutorial(request, project_id):
+    if request.method == 'POST' and request.FILES.get('tutorial_media'):
+        name = request.POST.get('tutorial_name')
+        media = request.FILES['tutorial_media']
+        project = get_object_or_404(Project, id=project_id)
+        print(f"name: {name}+media: {media}")
+        try:
+            newTutorial = Tutorial.objects.create(
+                Category=project.Category,
+                Project=project.Project,
+                StandardName=project.StandardName,
+                StandardNumber=project.StandardNumber,
+                ClauseNumber=project.ClauseNumber,
+                Name=name,
+                Media=media,
+                project_id=project_id,
+            )
+            newTutorial.save()
+        except Exception as e:
+            print(f"Error occurred while uploading tutorial {name}: {e}")
+            # 记录错误并向用户展示错误消息
+            messages.error(request, f"上传学习资料 {name} 时出错: {e}")
+    return redirect("project_detail", project_id=project_id)
+def delete_tutorial(request, project_id):
+    tutorial_id = request.POST.get('tutorial_id')
+    tutorial = get_object_or_404(Tutorial, id=tutorial_id)
+    tutorial.delete()
     return redirect("project_detail", project_id=project_id)
 def add_equipment(request, project_id):
-    error_message = None
     if request.method == 'POST' and request.FILES['equipment_photo']:
         equipment = request.POST.get('equipment_name')
         manufacturer = request.POST.get('equipment_manufacturer')
@@ -429,10 +447,40 @@ def add_sample(request, project_id):
 def download_regulation(request, project_id):
     return redirect("project_detail", project_id=project_id)
 def create_comparison(request, project_id):
+    if request.method == 'POST':
+        name = request.POST.get('comparison_name')
+        startDate = request.POST.get('comparison_startDate')
+        project = get_object_or_404(Project, id=project_id)
+
+        try:
+            newComparison = Comparison.objects.create(
+                Category=project.Category,
+                Project=project.Project,
+                StandardName=project.StandardName,
+                StandardNumber=project.StandardNumber,
+                ClauseNumber=project.ClauseNumber,
+                Name=name,
+                StartDate=startDate,
+                project_id=project_id,
+            )
+            newComparison.save()
+        except Exception as e:
+            print(f"Error occurred while creating comparison {name}: {e}")
+            # 记录错误并向用户展示错误消息
+            messages.error(request, f"创建比对测试 {name} 时出错: {e}")
     return redirect("project_detail", project_id=project_id)
 def start_comparison(request, project_id):
+    if request.method == 'POST':
+        comparison_id = request.POST.get('comparison_id')
+        comparison = get_object_or_404(Comparison, id=comparison_id)
+        comparison.State = "已开始"
+        comparison.save()
     return redirect("project_detail", project_id=project_id)
 def cancel_comparison(request, project_id):
+    if request.method == 'POST':
+        comparison_id = request.POST.get('comparison_id')
+        comparison = get_object_or_404(Comparison, id=comparison_id)
+        comparison.delete()
     return redirect("project_detail", project_id=project_id)
 
 

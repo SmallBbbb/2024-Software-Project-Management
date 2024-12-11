@@ -333,8 +333,10 @@ class Regulation(models.Model):
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
     ClauseNumber	TEXT(50)	标准下的条款号
-    Comparison      TEXT(50)    比对测试名称
+    Participants    TEXT(100)   参加测试的人员
+    Name            TEXT(50)    比对测试名称
     StartDate	    DATETIME	比对测试的计划开始时间
+    State           TEXT(50)    比对测试状态
 注:Django默认为数据库表创建'ID'作为主键,无需在模型中进行额外定义
 '''
 class Comparison(models.Model):
@@ -346,7 +348,9 @@ class Comparison(models.Model):
     ClauseNumber = models.CharField(max_length=50, null=False)
 
     Name = models.CharField(max_length=50, null=False)
+    Participants = models.CharField(max_length=100, null=True)
     StartDate = models.DateTimeField(null=True)
+    State = models.CharField(max_length=50, null=False, default='待开始')
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects4')
 
@@ -539,51 +543,32 @@ class SamplePurchase(models.Model):
         return self
 
 '''
-提醒表(Reminder)											
+提醒表(Message)											
     ID	            INT	        提醒在本表中的ID
-    Submitter	    TEXT(50)	提交提醒的人
+    BroadCategory   TEXT(50)    标准所在的大类
     Category	    TEXT(50)	标准所在的具体类别
     Project	        TEXT(50)	标准所规定的项目的名称
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
     ClauseNumber	TEXT(50)	标准下的条款号
-    Staff	        TEXT(200)	模块"人"下的提醒内容
-    Equipment	    TEXT(200)	模块"机"下的提醒内容
-    Regulation	    TEXT(200)	模块"法"下的提醒内容
-    Sample	        TEXT(200)	模块"料"下的提醒内容
+    Detail          TEXT(200)   提醒内容
     State	        TEXT(20)	该提醒的状态
 注:Django默认为数据库表创建'ID'作为主键,无需在模型中进行额外定义
 '''
-class Reminder(models.Model):
+class Message(models.Model):
 
-    Submitter = models.CharField(max_length=50, null=False)
+    BroadCategory = models.CharField(max_length=50, null=False)
     Category = models.CharField(max_length=50, null=False)
     Project = models.CharField(max_length=50, null=False)
     StandardName = models.CharField(max_length=50, null=False)
     StandardNumber = models.CharField(max_length=50, null=False)
     ClauseNumber = models.CharField(max_length=50, null=False)
-    Staff = models.CharField(max_length=200, null=False)
-    EquipmentName = models.CharField(max_length=200, null=False)
-    Regulation = models.CharField(max_length=200, null=False)
-    Sample = models.CharField(max_length=200, null=False)
-    State = models.CharField(max_length=20, null=False, default='Pending')
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check= models.Q(State = 'Pending')|
-                       models.Q(State = 'Finished'),
-                name='CheckReminderState',
-            )
-        ]
+    Detail = models.CharField(max_length=200, null=False)
+    State = models.CharField(max_length=20, null=False, default='待处理')
+
 
     def clean(self):
-        try:
-            User.objects.get(
-                Name=self.Submitter
-            )
-        except User.DoesNotExist:
-            raise ValidationError({'Submitter': 'User does not exist.'})
         try:
             Project.objects.get(
                 Category=self.Category,
@@ -602,7 +587,8 @@ class Reminder(models.Model):
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
     ClauseNumber	TEXT(50)	标准下的条款号
-    Tutorial        FILE        教程文件
+    Name            TEXT(50)    教程名称
+    Media           FILE        教程文件
 '''
 
 class Tutorial(models.Model):
@@ -611,6 +597,8 @@ class Tutorial(models.Model):
     StandardName = models.CharField(max_length=50, null=False)
     StandardNumber = models.CharField(max_length=50, null=False)
     ClauseNumber = models.CharField(max_length=50, null=False)
+
+    Name = models.CharField(max_length=50, null=False)
     Media = models.FileField(upload_to='Media/', null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects5')
