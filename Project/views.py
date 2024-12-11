@@ -19,11 +19,47 @@ from openpyxl.styles.fonts import Font
 from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, User, Message
 
 
+
+
 def homepage(request):
     return render(request, 'homepage.html')
 
 def test_standard(request):
-    return render(request,'test_standard.html')
+    # 获取所有标准
+    standards = Standard.objects.all()
+
+    # 将标准数据传递到模板
+    return render(request, 'test_standard.html', {'standards': standards})
+
+def message(request):
+    return render(request,'message.html')
+
+def test_project(request, standard_id):
+    # 获取标准对象
+    standard = get_object_or_404(Standard, id=standard_id)
+
+    # 获取该标准下的所有项目
+    projects = Project.objects.filter(standard=standard)
+
+    # 渲染模板，传递标准和项目
+    return render(request, 'test_project.html', {
+        'standard': standard,
+        'projects': projects,
+    })
+
+def test_detail(request,project_id):
+    project = get_object_or_404(Project, id=project_id)
+    equipments = Equipment.objects.filter(project_id=project_id)
+    samples = Sample.objects.filter(project_id=project_id)
+    tutorials = Tutorial.objects.filter(project_id=project_id)
+    comparisons = Comparison.objects.filter(project_id=project_id)
+    return render(request, 'test_detail.html', {'project': project,
+                                                   'equipments': equipments,
+                                                   'samples': samples,
+                                                   'tutorials': tutorials,
+                                                   'comparisons': comparisons,
+                                                   })
+
 
 def admin_message(request):
     messages = Message.objects.all()
@@ -392,6 +428,7 @@ def delete_tutorial(request, project_id):
     tutorial = get_object_or_404(Tutorial, id=tutorial_id)
     tutorial.delete()
     return redirect("project_detail", project_id=project_id)
+
 def add_equipment(request, project_id):
     if request.method == 'POST' and request.FILES['equipment_photo']:
         equipment = request.POST.get('equipment_name')

@@ -1,9 +1,5 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -49,72 +45,70 @@
         <button type="button" class="btn btn-secondary" onclick="showTab('method')">法</button>
     </div>
 
-    <!-- 子页面内容 -->
+    <!-- 人页面的内容 -->
     <div id="person" class="mt-4 tab-content" style="display:none;">
-        <h3>测试人员列表</h3>
+        <h3>人</h3>
 
-        <table class="table table-bordered">
-            <thead class="thead-light">
-                <tr>
-                    <th>测试人员</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadTutorialModal">
-            上传学习资料
-        </button>
-        <h3>学习资料</h3>
-        <table class="table table-bordered">
-            <tbody>
-            {% for tutorial in tutorials %}
-                <tr>
-                    <th>
-                        <h4>{{ tutorial.Name }}
-                        </h4>
-                        <video width="320" height="240" controls>
-                            <source src="{{ tutorial.Media.url }}" type="video/mp4">
-                            您的浏览器不支持播放此视频
-                        </video>
-                        <form action="{% url 'delete_tutorial' project.id %}" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type="hidden" name="tutorial_id" value="{{ tutorial.id }}">
-                            <button type="submit" class="btn btn-danger">删除</button>
-                        </form>
-                    </th>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <!--上传学习资料的弹窗-->
-        <div class="modal fade" id="uploadTutorialModal" tabindex="-1" role="dialog" aria-labelledby="uploadTutorialModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addEquipmentModalLabel">上传学习资料</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class = "modal-body">
-                   <form action="{% url 'upload_tutorial' project.id %}" method="post" enctype="multipart/form-data">
-                       {% csrf_token %}
-                       <div class="form-group">
-                           <label for="tutorial_name">资料名称</label><br>
-                           <input type="text" class="form-control-input" id="tutorial_name" name="tutorial_name"><br>
-                           <label for="tutorial">上传教学视频(.MP4)</label>
-                           <input type="file" class="form-control-file" id="tutorial_media" name="tutorial_media" accept="video/mp4"><br>
-                           <button type="submit" class="btn btn-primary">确定</button>
-                       </div>
-                   </form>
-                </div>
-            </div>
-        </div>
+        <!-- 人页面的三个子按钮 -->
+        <div class="btn-group" role="group" aria-label="Person Sub Tabs">
+            <button type="button" class="btn btn-secondary" onclick="showSubTab('person_testers')">测试人员</button>
+            <button type="button" class="btn btn-secondary" onclick="showSubTab('person_tutorials')">学习资料</button>
+            <button type="button" class="btn btn-secondary" onclick="showSubTab('person_exams')">考核试卷</button>
         </div>
 
+        <!-- 测试人员部分 -->
+        <div id="person_testers" class="mt-4 sub-tab-content" style="display:none;">
+            <h3>测试人员列表</h3>
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>测试人员</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 假设测试人员数据是从 Django 后端传递的 -->
+                    {% for tester in testers %}
+                        <tr>
+                            <td>{{ tester.name }}</td>
+                            <td>操作按钮</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 学习资料部分 -->
+        <div id="person_tutorials" class="mt-4 sub-tab-content" style="display:none;">
+            <h3>学习资料</h3>
+            <table class="table table-bordered">
+                <tbody>
+                    {% for tutorial in tutorials %}
+                        <tr>
+                            <th>
+                                <h4>{{ tutorial.Name }}</h4>
+                                <video width="320" height="240" controls>
+                                    <source src="{{ tutorial.Media.url }}" type="video/mp4">
+                                    您的浏览器不支持播放此视频
+                                </video>
+                                <form action="{% url 'delete_tutorial' project.id %}" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="tutorial_id" value="{{ tutorial.id }}">
+                                    <button type="submit" class="btn btn-danger">删除</button>
+                                </form>
+                            </th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 考核试卷部分 -->
+        <div id="person_exams" class="mt-4 sub-tab-content" style="display:none;">
+            <h3>考核试卷</h3>
+            <!-- 这里是考核试卷的内容，可以是列表、表格等 -->
+            <p>考核试卷列表内容</p>
+        </div>
     </div>
 
     <div id="machine" class="mt-4 tab-content" style="display:none;">
@@ -320,6 +314,8 @@
     </div>
 </div>
 
+</div>
+
 <!-- 引入 JS 脚本 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -339,6 +335,19 @@
         // 显示选中的Tab
         var selectedTab = document.getElementById(tabName);
         selectedTab.style.display = 'block';
+    }
+
+    // 切换显示的子Tab内容
+    function showSubTab(subTabName) {
+        // 隐藏所有子Tab内容
+        var subTabs = document.querySelectorAll('.sub-tab-content');
+        subTabs.forEach(function(subTab) {
+            subTab.style.display = 'none';
+        });
+
+        // 显示选中的子Tab
+        var selectedSubTab = document.getElementById(subTabName);
+        selectedSubTab.style.display = 'block';
     }
 </script>
 

@@ -7,7 +7,10 @@ from . import views
 urlpatterns = [
     path('', views.user_login, name='user_login'),
     path('homepage/', views.homepage, name='homepage'),
+    path('messages', views.message, name='message'),
     path('test_standard/', views.test_standard, name='test_standard'),
+    path('test_project/<int:standard_id>/', views.test_project, name='test_project'),
+    path('test_detail/<int:project_id>/', views.test_detail, name='test_detail'),
     path('admin_message/', views.admin_message, name='admin_message'),
     path('user_signup/', views.user_signup, name='user_signup'),
     path('admin_standard/', views.admin_standard, name='admin_standard'),
