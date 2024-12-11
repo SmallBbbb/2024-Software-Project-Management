@@ -5,7 +5,7 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('', views.user_login, name='user_login'),
+    path('user_login/', views.user_login, name='user_login'),
     path('homepage/', views.homepage, name='homepage'),
     path('messages', views.message, name='message'),
     path('test_standard/', views.test_standard, name='test_standard'),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('standard/<int:standard_id>/projects/', views.standard_projects, name='standard_projects'),
     path('project/<int:project_id>/', views.project_detail, name='project_detail'),
     path('project/<int:project_id>/upload_tutorial', views.upload_tutorial, name='upload_tutorial'),
+    path('project/<int:project_id>/upload_paper', views.upload_paper, name='upload_paper'),
     path('project/<int:project_id>/delete_tutorial', views.delete_tutorial, name='delete_tutorial'),
     path('project/<int:project_id>/add_equipment', views.add_equipment, name='add_equipment'),
     path('<int:equipment_id>/show_equipment_detail', views.show_equipment_detail, name='show_equipment_detail'),
@@ -29,9 +30,8 @@ urlpatterns = [
     path('<int:project_id>/start_comparison', views.start_comparison, name='start_comparison'),
     path('<int:project_id>/cancel_comparison', views.cancel_comparison, name='cancel_comparison'),
 
-
-
-
+    #以下为测试人员可见页面相关url
+    path('<int:project_id>/join_in_comparison', views.join_in_comparison, name='join_in_comparison'),
     # 可以添加更多的URL模式
 ]
 

@@ -59,21 +59,21 @@
         <!-- 测试人员部分 -->
         <div id="person_testers" class="mt-4 sub-tab-content" style="display:none;">
             <h3>测试人员列表</h3>
-            <table class="table table-bordered">
+            <table class="table table-bordered table-hover">
                 <thead class="thead-light">
-                    <tr>
-                        <th>测试人员</th>
-                        <th>操作</th>
-                    </tr>
+                <tr>
+                    <th>测试人员</th>
+                    <th>操作</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <!-- 假设测试人员数据是从 Django 后端传递的 -->
-                    {% for tester in testers %}
-                        <tr>
-                            <td>{{ tester.name }}</td>
-                            <td>操作按钮</td>
-                        </tr>
-                    {% endfor %}
+                <!-- 假设测试人员数据是从 Django 后端传递的 -->
+                {% for tester in testers %}
+                    <tr>
+                        <td>{{ tester.name }}</td>
+                        <td>操作按钮</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -83,32 +83,60 @@
             <h3>学习资料</h3>
             <table class="table table-bordered">
                 <tbody>
-                    {% for tutorial in tutorials %}
-                        <tr>
-                            <th>
-                                <h4>{{ tutorial.Name }}</h4>
-                                <video width="320" height="240" controls>
-                                    <source src="{{ tutorial.Media.url }}" type="video/mp4">
-                                    您的浏览器不支持播放此视频
-                                </video>
-                                <form action="{% url 'delete_tutorial' project.id %}" method="post" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="tutorial_id" value="{{ tutorial.id }}">
-                                    <button type="submit" class="btn btn-danger">删除</button>
-                                </form>
-                            </th>
-                        </tr>
-                    {% endfor %}
+                {% for tutorial in tutorials %}
+                    <tr>
+                        <th>
+                            <h4>{{ tutorial.Name }}</h4>
+                            <video width="320" height="240" controls>
+                                <source src="{{ tutorial.Media.url }}" type="video/mp4">
+                                您的浏览器不支持播放此视频
+                            </video>
+                            <form action="{% url 'delete_tutorial' project.id %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="tutorial_id" value="{{ tutorial.id }}">
+                                <button type="submit" class="btn btn-danger">删除</button>
+                            </form>
+                        </th>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
 
         <!-- 考核试卷部分 -->
         <div id="person_exams" class="mt-4 sub-tab-content" style="display:none;">
-            <h3>考核试卷</h3>
-            <!-- 这里是考核试卷的内容，可以是列表、表格等 -->
-            <p>考核试卷列表内容</p>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadPaperModal">
+                上传空白试卷
+            </button>
+            <table class="table table-bordered table-hover">
+
+            </table>
         </div>
+        <div class="modal fade" id="uploadPaperModal" tabindex="-1" role="dialog" aria-labelledby="uploadPaperModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadPaperModalLabel">上传空白试卷</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class = "modal-body">
+                        <form action="{% url 'upload_paper' project.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="paper_name">试卷名称</label><br>
+                                <input type="text" class="form-control-label" name="paper_name" id="paper_name"><br>
+                                <label for="paper_file">上传试卷</label>
+                                <input type="file" class="form-control-file" name="paper_file" id="paper_file">
+                                <button type="submit" class="btn btn-primary">提交</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div id="machine" class="mt-4 tab-content" style="display:none;">
@@ -120,76 +148,76 @@
         <!--设备列表-->
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
-                <tr>
-                    <th>设备名称</th>
-                    <th>生产厂家</th>
-                    <th>设备图片</th>
-                    <th>设备详情</th>
-                </tr>
+            <tr>
+                <th>设备名称</th>
+                <th>生产厂家</th>
+                <th>设备图片</th>
+                <th>设备详情</th>
+            </tr>
             </thead>
             <tbody>
-                {% for equipment in equipments %}
-                    <tr>
-                        <td>{{ equipment.Equipment }}</td>
-                        <td>{{ equipment.Manufacturer }}</td>
-                        <td><img src="{{ equipment.Photo.url }}" alt="设备图片" style="max-width: 100%; height: 500px;"></td>
+            {% for equipment in equipments %}
+                <tr>
+                    <td>{{ equipment.Equipment }}</td>
+                    <td>{{ equipment.Manufacturer }}</td>
+                    <td><img src="{{ equipment.Photo.url }}" alt="设备图片" style="max-width: 100%; height: 500px;"></td>
 
-                    </tr>
-                {% endfor %}
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
 
         <!--添加设备的弹窗-->
         <div class="modal fade" id="addEquipmentModal" tabindex="-1" role="dialog" aria-labelledby="addEquipmentModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addEquipmentModalLabel">添加新设备</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class = "modal-body">
-                   <form action="{% url 'add_equipment' project.id %}" method="post" enctype="multipart/form-data">
-                       {% csrf_token %}
-                       <div class="form-group">
-                           <label for="equipment_name">设备名称</label><br>
-                           <input type="text" class="form-check-label" id = "equipment_name" name="equipment_name"><br>
-                           <label for="sample_manufacturer">生产厂家</label><br>
-                           <input type="text" class="form-check-label" id ="sample_manufacturer" name="equipment_manufacturer"><br>
-                           <label for="equipment_photo">上传照片</label><br>
-                           <input type="file" class="form-control-file" id="equipment_photo" name="equipment_photo" accept="image/*"><br>
-                           <label for="equipment_detail">描述</label><br>
-                           <input type="text" class="form-control-lg" id="equipment_detail" name="equipment_detail"><br><br>
-                           <button type="submit" class="btn btn-primary">添加</button>
-                       </div>
-                   </form>
+            <div class="modal-dialog" role="dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addEquipmentModalLabel">添加新设备</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class = "modal-body">
+                        <form action="{% url 'add_equipment' project.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="equipment_name">设备名称</label><br>
+                                <input type="text" class="form-check-label" id = "equipment_name" name="equipment_name"><br>
+                                <label for="sample_manufacturer">生产厂家</label><br>
+                                <input type="text" class="form-check-label" id ="sample_manufacturer" name="equipment_manufacturer"><br>
+                                <label for="equipment_photo">上传照片</label><br>
+                                <input type="file" class="form-control-file" id="equipment_photo" name="equipment_photo" accept="image/*"><br>
+                                <label for="equipment_detail">描述</label><br>
+                                <input type="text" class="form-control-lg" id="equipment_detail" name="equipment_detail"><br><br>
+                                <button type="submit" class="btn btn-primary">添加</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
 
-    <!--展示详情的弹窗-->
-{#    <div class="modal fade" id="showEquipmentDetailModal" tabindex="-1" role="dialog" aria-labelledby="showEquipmentDetailModal" aria-hidden="true">#}
-{#        <div class="modal-dialog" role="dialog">#}
-{#            <div class="modal-content">#}
-{#                <div class="modal-header">#}
-{#                    <h5 class="modal-title" id="showEquipmentDetailModalLabel">设备详情</h5>#}
-{#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
-{#                        <span aria-hidden="true">&times;</span>#}
-{#                    </button>#}
-{#                </div>#}
-{#                <div class = "modal-body">#}
-{#                    <table class="table table-borderless table-hover">#}
-{#                        <tr>{{ equipment_detail.Equipment }}</tr>#}
-{#                        <tr>{{ equipment_detail.Manufacturer }}</tr>#}
-{#                        <tr><img src="{{ equipment_detail.Photo }}" alt="设备图片"> </tr>#}
-{#                        <tr>{{ equipment_detail.Detail }}</tr>#}
-{#                    </table>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{##}
+        <!--展示详情的弹窗-->
+        {#    <div class="modal fade" id="showEquipmentDetailModal" tabindex="-1" role="dialog" aria-labelledby="showEquipmentDetailModal" aria-hidden="true">#}
+        {#        <div class="modal-dialog" role="dialog">#}
+        {#            <div class="modal-content">#}
+        {#                <div class="modal-header">#}
+        {#                    <h5 class="modal-title" id="showEquipmentDetailModalLabel">设备详情</h5>#}
+        {#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+        {#                        <span aria-hidden="true">&times;</span>#}
+        {#                    </button>#}
+        {#                </div>#}
+        {#                <div class = "modal-body">#}
+        {#                    <table class="table table-borderless table-hover">#}
+        {#                        <tr>{{ equipment_detail.Equipment }}</tr>#}
+        {#                        <tr>{{ equipment_detail.Manufacturer }}</tr>#}
+        {#                        <tr><img src="{{ equipment_detail.Photo }}" alt="设备图片"> </tr>#}
+        {#                        <tr>{{ equipment_detail.Detail }}</tr>#}
+        {#                    </table>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+        {##}
     </div>
 
     <div id="material" class="mt-4 tab-content" style="display:none;">
@@ -199,52 +227,52 @@
         </button>
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
-                <tr>
-                    <th>产品名称</th>
-                    <th>规格型号</th>
-                    <th>生产厂家</th>
-                    <th>批号</th>
-                </tr>
+            <tr>
+                <th>产品名称</th>
+                <th>规格型号</th>
+                <th>生产厂家</th>
+                <th>批号</th>
+            </tr>
             </thead>
             <tbody>
-                {% for sample in samples %}
-                    <tr>
-                        <td>{{ sample.Sample }}</td>
-                        <td>{{ sample.Specification }}</td>
-                        <td>{{ sample.Manufacturer }}</td>
-                        <td>{{ sample.BatchNumber }}</td>
-                    </tr>
-                {% endfor %}
+            {% for sample in samples %}
+                <tr>
+                    <td>{{ sample.Sample }}</td>
+                    <td>{{ sample.Specification }}</td>
+                    <td>{{ sample.Manufacturer }}</td>
+                    <td>{{ sample.BatchNumber }}</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
 
         <div class="modal fade" id="addSampleModal" tabindex="-1" role="dialog" aria-labelledby="addSampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addSampleModalLabel">添加新设备</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class = "modal-body">
-                   <form action="{% url 'add_sample' project.id %}" method="post" enctype="multipart/form-data">
-                       {% csrf_token %}
-                       <div class="form-group">
-                           <label for="sample_name">产品名称</label><br>
-                           <input type="text" class="form-check-label" id = "sample_name" name="sample_name"><br>
-                           <label for="sample_specification">规格型号</label><br>
-                           <input type="text" class="form-check-label" id = "sample_specification" name="sample_specification"><br>
-                           <label for="sample_manufacturer">生产厂家</label><br>
-                           <input type="text" class="form-check-label" id = "sample_manufacturer" name="sample_manufacturer"><br>
-                           <label for="sample_batchNumber">批号</label><br>
-                           <input type="text" class="form-control-lg" id="sample_batchNumber" name="sample_batchNumber"><br><br>
-                           <button type="submit" class="btn btn-primary">添加</button>
-                       </div>
-                   </form>
+            <div class="modal-dialog" role="dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSampleModalLabel">添加新设备</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class = "modal-body">
+                        <form action="{% url 'add_sample' project.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="sample_name">产品名称</label><br>
+                                <input type="text" class="form-check-label" id = "sample_name" name="sample_name"><br>
+                                <label for="sample_specification">规格型号</label><br>
+                                <input type="text" class="form-check-label" id = "sample_specification" name="sample_specification"><br>
+                                <label for="sample_manufacturer">生产厂家</label><br>
+                                <input type="text" class="form-check-label" id = "sample_manufacturer" name="sample_manufacturer"><br>
+                                <label for="sample_batchNumber">批号</label><br>
+                                <input type="text" class="form-control-lg" id="sample_batchNumber" name="sample_batchNumber"><br><br>
+                                <button type="submit" class="btn btn-primary">添加</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
     <div id="method" class="mt-4 tab-content" style="display:none;">
@@ -255,19 +283,19 @@
 
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
-                <tr>
-                    <th>比对测试名称</th>
-                    <th>参加人员</th>
-                    <th>预计开始时间</th>
-                    <th>状态</th>
-                    <th>操作</th>
-                </tr>
+            <tr>
+                <th>比对测试名称</th>
+                <th>参加人员</th>
+                <th>预计开始时间</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
             </thead>
             <tbody>
             {% for comparison in comparisons %}
                 <tr>
                     <td>{{ comparison.Name }}</td>
-                    <td>{{ comparison.Participant }}</td>
+                    <td>{{ comparison.Participants }}</td>
                     <td>{{ comparison.StartDate }}</td>
                     <td>{{ comparison.State }}</td>
                     <td>
@@ -276,9 +304,9 @@
                             <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
                             <button type = "submit" class = "btn btn-primary">开始</button>
                         </form>
-                       <form action="{% url 'cancel_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
+                        <form action="{% url 'cancel_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                           <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
+                            <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
                             <button type = "submit" class = "btn btn-primary">删除</button>
                         </form>
                     </td>
@@ -288,28 +316,28 @@
         </table>
         <!--新建比对测试模态框-->
         <div class="modal fade" id="createComparisonModal" tabindex="-1" role="dialog" aria-labelledby="createComparisonModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createComparisonModalLabel">新建比对测试</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class = "modal-body">
-                   <form action="{% url 'create_comparison' project.id %}" method="post" enctype="multipart/form-data">
-                       {% csrf_token %}
-                       <div class="form-group">
-                           <label for="comparison_name">测试名称</label><br>
-                           <input type="text" class="form-control-input" id="comparison_name" name="comparison_name"><br>
-                           <label for="comparison_startDate">开始时间</label><br>
-                           <input type="date" class="form-control-input" id="comparison_startDate" name="comparison_startDate"><br><br>
-                           <button type="submit" class="btn btn-primary">创建</button>
-                       </div>
-                   </form>
+            <div class="modal-dialog" role="dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createComparisonModalLabel">新建比对测试</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class = "modal-body">
+                        <form action="{% url 'create_comparison' project.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="comparison_name">测试名称</label><br>
+                                <input type="text" class="form-control-input" id="comparison_name" name="comparison_name"><br>
+                                <label for="comparison_startDate">开始时间</label><br>
+                                <input type="date" class="form-control-input" id="comparison_startDate" name="comparison_startDate"><br><br>
+                                <button type="submit" class="btn btn-primary">创建</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
 </div>

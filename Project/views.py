@@ -15,8 +15,11 @@ from django.shortcuts import render, get_object_or_404
 
 from openpyxl.styles.alignment import Alignment
 from openpyxl.styles.fonts import Font
+from django.contrib.auth.models import User
 
-from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, User, Message
+from djangoProject import settings
+from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, Message
+
 
 
 
@@ -105,8 +108,8 @@ def user_login(request):
             # 如果用户存在且密码正确，则登录用户
             login(request, user)
             # 获取用户的用户名
-            username = user.username
-            request.session['username'] = username
+            # username = user.username
+            # request.session['username'] = username
             return render(request, 'homepage.html', {'username': username})  # 将用户名传递到模板中
 
         else:
@@ -428,6 +431,11 @@ def delete_tutorial(request, project_id):
     tutorial = get_object_or_404(Tutorial, id=tutorial_id)
     tutorial.delete()
     return redirect("project_detail", project_id=project_id)
+def upload_paper(request, project_id):
+    name = request.POST.get('paper_name')
+    file = request.FILES['paper_file']
+    project = get_object_or_404(Project, id=project_id)
+    return redirect("project_detail", project_id=project_id)
 
 def add_equipment(request, project_id):
     if request.method == 'POST' and request.FILES['equipment_photo']:
@@ -520,4 +528,30 @@ def cancel_comparison(request, project_id):
         comparison.delete()
     return redirect("project_detail", project_id=project_id)
 
+#以下为测试人员可见页面相关视图函数
+def download_blank_paper(request, filename):
+    # 确定PDF文件的路径
+    file_path = os.path.join(settings.MEDIA_ROOT, 'pdfs', filename)  # 假设PDF文件存储在MEDIA_ROOT下的pdfs文件夹中
+
+    # 检查文件是否存在
+    if not os.path.exists(file_path):
+        return HttpResponse("File not found", status=404)
+
+    # 打开文件并读取其内容
+    with open(file_path, 'rb') as fh:
+        response = HttpResponse(fh.read(), content_type="application/pdf")
+        response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+    return response
+
+def join_in_comparison(request, project_id):
+    if request.method == 'POST':
+        comparison_id = request.POST.get('comparison_id')
+        comparison = get_object_or_404(Comparison, id=comparison_id)
+        if comparison.Participants is None or comparison.Participants == "":
+            comparison.Participants = request.user.username
+        else:
+            newParticipants = comparison.Participants + ',' + request.user.username
+            comparison.Participants = newParticipants
+        comparison.save()
+    return redirect("test_detail", project_id=project_id)
 

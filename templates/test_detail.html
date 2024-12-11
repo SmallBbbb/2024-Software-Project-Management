@@ -61,19 +61,19 @@
             <h3>测试人员列表</h3>
             <table class="table table-bordered">
                 <thead class="thead-light">
-                    <tr>
-                        <th>测试人员</th>
-                        <th>操作</th>
-                    </tr>
+                <tr>
+                    <th>测试人员</th>
+                    <th>操作</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <!-- 假设测试人员数据是从 Django 后端传递的 -->
-                    {% for tester in testers %}
-                        <tr>
-                            <td>{{ tester.name }}</td>
-                            <td>操作按钮</td>
-                        </tr>
-                    {% endfor %}
+                <!-- 假设测试人员数据是从 Django 后端传递的 -->
+                {% for tester in testers %}
+                    <tr>
+                        <td>{{ tester.name }}</td>
+                        <td>操作按钮</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -83,31 +83,25 @@
             <h3>学习资料</h3>
             <table class="table table-bordered">
                 <tbody>
-                    {% for tutorial in tutorials %}
-                        <tr>
-                            <th>
-                                <h4>{{ tutorial.Name }}</h4>
-                                <video width="320" height="240" controls>
-                                    <source src="{{ tutorial.Media.url }}" type="video/mp4">
-                                    您的浏览器不支持播放此视频
-                                </video>
-                                <form action="{% url 'delete_tutorial' project.id %}" method="post" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="tutorial_id" value="{{ tutorial.id }}">
-                                    <button type="submit" class="btn btn-danger">删除</button>
-                                </form>
-                            </th>
-                        </tr>
-                    {% endfor %}
+                {% for tutorial in tutorials %}
+                    <tr>
+                        <th>
+                            <h4>{{ tutorial.Name }}</h4>
+                            <video width="320" height="240" controls>
+                                <source src="{{ tutorial.Media.url }}" type="video/mp4">
+                                您的浏览器不支持播放此视频
+                            </video>
+                        </th>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
 
         <!-- 考核试卷部分 -->
         <div id="person_exams" class="mt-4 sub-tab-content" style="display:none;">
-            <h3>考核试卷</h3>
-            <!-- 这里是考核试卷的内容，可以是列表、表格等 -->
-            <p>考核试卷列表内容</p>
+
+
         </div>
     </div>
 
@@ -116,27 +110,23 @@
         <!--设备列表-->
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
-                <tr>
-                    <th>设备名称</th>
-                    <th>生产厂家</th>
-                    <th>设备图片</th>
-                    <th>设备详情</th>
-                </tr>
+            <tr>
+                <th>设备名称</th>
+                <th>生产厂家</th>
+                <th>设备图片</th>
+                <th>设备详情</th>
+            </tr>
             </thead>
             <tbody>
-                {% for equipment in equipments %}
-                    <tr>
-                        <td>{{ equipment.Equipment }}</td>
-                        <td>{{ equipment.Manufacturer }}</td>
-                        <td><img src="{{ equipment.Photo.url }}" alt="设备图片" style="max-width: 100%; height: 500px;"></td>
-
-                    </tr>
-                {% endfor %}
+            {% for equipment in equipments %}
+                <tr>
+                    <td>{{ equipment.Equipment }}</td>
+                    <td>{{ equipment.Manufacturer }}</td>
+                    <td><img src="{{ equipment.Photo.url }}" alt="设备图片" style="max-width: 100%; height: 500px;"></td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
-
-
-
     </div>
 
     <div id="material" class="mt-4 tab-content" style="display:none;">
@@ -144,33 +134,29 @@
 
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
-                <tr>
-                    <th>产品名称</th>
-                    <th>规格型号</th>
-                    <th>生产厂家</th>
-                    <th>批号</th>
-                </tr>
+            <tr>
+                <th>产品名称</th>
+                <th>规格型号</th>
+                <th>生产厂家</th>
+                <th>批号</th>
+            </tr>
             </thead>
             <tbody>
-                {% for sample in samples %}
-                    <tr>
-                        <td>{{ sample.Sample }}</td>
-                        <td>{{ sample.Specification }}</td>
-                        <td>{{ sample.Manufacturer }}</td>
-                        <td>{{ sample.BatchNumber }}</td>
-                    </tr>
-                {% endfor %}
+            {% for sample in samples %}
+                <tr>
+                    <td>{{ sample.Sample }}</td>
+                    <td>{{ sample.Specification }}</td>
+                    <td>{{ sample.Manufacturer }}</td>
+                    <td>{{ sample.BatchNumber }}</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
-
-        </div>
     </div>
     <div id="method" class="mt-4 tab-content" style="display:none;">
         <h3>比对测试列表</h3>
-
-       <div class="table-responsive">
-    <table class="table table-bordered table-hover">
-        <thead class="thead-light">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
             <tr>
                 <th>比对测试名称</th>
                 <th>参加人员</th>
@@ -178,20 +164,32 @@
                 <th>状态</th>
                 <th>操作</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
+            {% load custom_filters %}
             {% for comparison in comparisons %}
                 <tr>
                     <td>{{ comparison.Name }}</td>
-                    <td>{{ comparison.Participant }}</td>
+                    <td>{{ comparison.Participants }}</td>
                     <td>{{ comparison.StartDate }}</td>
                     <td>{{ comparison.State }}</td>
+                    <td>
+                        {% if comparison.Participants|contain_string:user.username %}
+                            <p>已参加</p>
+                        {% else %}
+                            <form action="{% url 'join_in_comparison' project.id %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="comparison_id" value="{{ comparison.id }}">
+                                <button type="submit" class="btn btn-primary">参加测试</button>
+                            </form>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
-
 
 <!-- 引入 JS 脚本 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

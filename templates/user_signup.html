@@ -64,7 +64,7 @@
                     <span class="h-px w-16 bg-gray-200"></span>
                 </div>
 
-                <form class="mt-8 space-y-6" action="#" method="POST">
+                <form class="mt-8 space-y-6" action="{% url 'user_signup' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="remember" value="true"/>
                     <div class="relative">

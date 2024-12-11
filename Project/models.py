@@ -1,46 +1,6 @@
 
-
 from django.core.exceptions import ValidationError
 from django.db import models
-# class MyModel(models.Model):
-#
-#     def __str__(self):
-#         return self
-'''
-用户模型(User)
-    ID           INT       即用户ID,为用户的唯一标识符(此项为主键)
-    Username     TEXT(20)  用户名,即登陆账号,
-    Password     TEXT(20)  登陆密码
-    Name         TEXT(20)  用户的真实姓名
-    PhoneNumber  TEXT(20)  用户的电话号码
-    Institution  TEXT(20)  用户所属机构       
-    Identity     TEXT(20)  用户身份,支持人员|测试人员|管理员|潜在客户
-    注:Django默认为数据库表创建'ID'作为主键,无需在模型中进行额外定义
-'''
-class User(models.Model):
-    #数据表列
-    Username = models.CharField(max_length=20, null=False, unique=True)
-    Password = models.CharField(max_length=20, unique=False, null=False)
-    Name = models.CharField(max_length=20, null=False, unique=True)
-    PhoneNumber = models.CharField(max_length=20)
-    Institution = models.CharField(max_length=20, null=False)
-    Identity = models.CharField(max_length=20, null=False)
-
-    #约束
-    class Meta:
-        #约束 Identity 的值为 SupportStaff | TestStaff | Administer | PotentialCustomer
-        constraints = [
-            models.CheckConstraint(
-                check=models.Q(Identity='SupportStaff') |
-                      models.Q(Identity='TestStaff') |
-                      models.Q(Identity='Administer') |
-                      models.Q(Identity='PotentialCustomer'),
-                name='CheckUserIdentity'
-            ),
-        ]
-    def __str__(self):
-        return self
-
 '''
 授权证书模型(Certification)
     ID                  INT         证书ID
@@ -69,13 +29,7 @@ class Certification(models.Model):
     Authority = models.CharField(max_length=50, null=False)
 
     def clean(self):
-        # 验证以下二元组是否确实对应 User 模型中的一行
-        try:
-            User.objects.get(
-                Name=self.Staff
-            )
-        except User.DoesNotExist:
-            raise ValidationError({'Name': 'User does not exist.'})
+
         # 验证以下五元组是否确实对应 Standard 模型中的一行
         try:
             Standard.objects.get(
@@ -208,13 +162,6 @@ class TestStaff(models.Model):
 
 
     def clean(self):
-        # 验证 Name 是否确实对应 User 模型中的 Name
-        try:
-            User.objects.get(
-                Name=self.Name,
-            )
-        except User.DoesNotExist:
-            raise ValidationError({'Name': 'User does not exist.'})
         # 验证以下五元组是否确实对应 Standard 模型中的一行
         try:
             Project.objects.get(
@@ -444,13 +391,6 @@ class EquipPurchase(models.Model):
         ]
 
     def clean(self):
-        #确保对应申请人在 User 表中存在
-        try:
-            User.objects.get(
-                Name=self.Submitter
-            )
-        except User.DoesNotExist:
-            raise ValidationError({'Submitter': 'User does not exist.'})
         #确保对应标准在标准表中存在
         try:
             Project.objects.get(
@@ -512,13 +452,6 @@ class SamplePurchase(models.Model):
     DeliveryTime = models.DateTimeField(blank=True, null=True)
 
     def clean(self):
-        # 确保对应申请人在 User 表中存在
-        try:
-            User.objects.get(
-                Name=self.Submitter
-            )
-        except User.DoesNotExist:
-            raise ValidationError({'Submitter': 'User does not exist.'})
         try:
             Project.objects.get(
                 Category=self.Category,
