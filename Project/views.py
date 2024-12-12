@@ -18,11 +18,8 @@ from openpyxl.styles.fonts import Font
 from django.contrib.auth.models import User
 
 from djangoProject import settings
-from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, Message
-
-
-
-
+from .models import Standard, Project, TestStaff, Equipment, Sample, Regulation, Comparison, Tutorial, Message, Paper
+from openpyxl import load_workbook
 
 def homepage(request):
     return render(request, 'homepage.html')
@@ -33,6 +30,11 @@ def test_standard(request):
 
     # 将标准数据传递到模板
     return render(request, 'test_standard.html', {'standards': standards})
+def test_search_standard(request):
+    query = request.GET.get('query')
+    standards = Standard.objects.filter(StandardName__icontains=query)
+    return render(request, 'test_standard.html', {'standards': standards})
+
 
 def message(request):
     return render(request,'message.html')
@@ -50,18 +52,31 @@ def test_project(request, standard_id):
         'projects': projects,
     })
 
+def test_search_project(request, standard_id):
+    query = request.GET.get('query')
+    projects = Project.objects.filter(Project__icontains=query)
+    standard = get_object_or_404(Standard, id=standard_id)
+    return render(request, 'test_project.html', {
+        'standard': standard,
+        'projects': projects,
+    })
+
 def test_detail(request,project_id):
     project = get_object_or_404(Project, id=project_id)
     equipments = Equipment.objects.filter(project_id=project_id)
     samples = Sample.objects.filter(project_id=project_id)
     tutorials = Tutorial.objects.filter(project_id=project_id)
     comparisons = Comparison.objects.filter(project_id=project_id)
+    papers = Paper.objects.filter(project_id=project_id, Submitter__isnull=True)
+    answers = Paper.objects.filter(project_id=project_id, Submitter=request.user.username)
     return render(request, 'test_detail.html', {'project': project,
-                                                   'equipments': equipments,
-                                                   'samples': samples,
-                                                   'tutorials': tutorials,
-                                                   'comparisons': comparisons,
-                                                   })
+                                                'equipments': equipments,
+                                                'samples': samples,
+                                                'tutorials': tutorials,
+                                                'comparisons': comparisons,
+                                                'papers': papers,
+                                                'answers': answers,
+                                                })
 
 
 def admin_message(request):
@@ -126,8 +141,16 @@ def admin_standard(request):
     # 将标准数据传递到模板
     return render(request, 'admin_standard.html', {'standards': standards})
 
+def admin_search_standard(request):
+    query = request.GET.get('query')
+    standards = Standard.objects.filter(StandardName__icontains=query)
+    return render(request, 'admin_standard.html', {'standards': standards})
 
-from openpyxl import load_workbook
+def admin_search_project(request, standard_id):
+    query = request.GET.get('query')
+    projects = Project.objects.filter(Project__icontains=query)
+    standard = get_object_or_404(Standard, id=standard_id)
+    return render(request, 'standard_projects.html', {'projects': projects, 'standard': standard})
 
 #下载可用于上传标准的模板.xlsx文件
 def download_standard_template(request):
@@ -397,12 +420,16 @@ def project_detail(request, project_id):
     samples = Sample.objects.filter(project_id=project_id)
     tutorials = Tutorial.objects.filter(project_id=project_id)
     comparisons = Comparison.objects.filter(project_id=project_id)
+    papers = Paper.objects.filter(project_id=project_id, Submitter__isnull=True)
+    answers = Paper.objects.filter(project_id=project_id, Submitter__isnull=False)
     return render(request, 'project_detail.html', {'project': project,
-                                                                        'equipments': equipments,
-                                                                        'samples': samples,
-                                                                        'tutorials': tutorials,
-                                                                        'comparisons':comparisons,
-                                                                        })
+                                                   'equipments': equipments,
+                                                   'samples': samples,
+                                                   'tutorials': tutorials,
+                                                   'comparisons':comparisons,
+                                                   'papers': papers,
+                                                   'answers': answers,
+                                                   })
 def upload_tutorial(request, project_id):
     if request.method == 'POST' and request.FILES.get('tutorial_media'):
         name = request.POST.get('tutorial_name')
@@ -427,14 +454,38 @@ def upload_tutorial(request, project_id):
             messages.error(request, f"上传学习资料 {name} 时出错: {e}")
     return redirect("project_detail", project_id=project_id)
 def delete_tutorial(request, project_id):
-    tutorial_id = request.POST.get('tutorial_id')
-    tutorial = get_object_or_404(Tutorial, id=tutorial_id)
-    tutorial.delete()
+    if request.method == 'POST':
+        tutorial_id = request.POST.get('tutorial_id')
+        tutorial = get_object_or_404(Tutorial, id=tutorial_id)
+        tutorial.delete()
     return redirect("project_detail", project_id=project_id)
-def upload_paper(request, project_id):
+def upload_blank_paper(request, project_id):
     name = request.POST.get('paper_name')
     file = request.FILES['paper_file']
     project = get_object_or_404(Project, id=project_id)
+    try:
+        newPaper = Paper.objects.create(
+            Category=project.Category,
+            Project=project.Project,
+            StandardName=project.StandardName,
+            StandardNumber=project.StandardNumber,
+            ClauseNumber=project.ClauseNumber,
+            Name=name,
+            Paper=file,
+            Type='blank',
+            project_id=project_id,
+        )
+        newPaper.save()
+    except Exception as e:
+        print(f"Error occurred while adding equipment {name}: {e}")
+        # 记录错误并向用户展示错误消息
+        messages.error(request, f"添加设备 {name} 时出错: {e}")
+    return redirect("project_detail", project_id=project_id)
+def delete_paper(request, project_id):
+    if request.method == 'POST':
+        paper_id = request.POST.get('paper_id')
+        paper = Paper.objects.get(id=paper_id)
+        paper.delete()
     return redirect("project_detail", project_id=project_id)
 
 def add_equipment(request, project_id):
@@ -529,9 +580,10 @@ def cancel_comparison(request, project_id):
     return redirect("project_detail", project_id=project_id)
 
 #以下为测试人员可见页面相关视图函数
-def download_blank_paper(request, filename):
+def download_blank_paper(request, paper_id):
+    paper = get_object_or_404(Paper, id=paper_id)
     # 确定PDF文件的路径
-    file_path = os.path.join(settings.MEDIA_ROOT, 'pdfs', filename)  # 假设PDF文件存储在MEDIA_ROOT下的pdfs文件夹中
+    file_path = paper.Paper.path
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -540,9 +592,32 @@ def download_blank_paper(request, filename):
     # 打开文件并读取其内容
     with open(file_path, 'rb') as fh:
         response = HttpResponse(fh.read(), content_type="application/pdf")
-        response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(paper.Paper.name)
     return response
-
+def upload_paper(request, project_id):
+    name = request.POST.get('paper_name')
+    file = request.FILES['paper_file']
+    submitter = request.POST.get('paper_submitter')
+    project = get_object_or_404(Project, id=project_id)
+    try:
+        newPaper = Paper.objects.create(
+            Category=project.Category,
+            Project=project.Project,
+            StandardName=project.StandardName,
+            StandardNumber=project.StandardNumber,
+            ClauseNumber=project.ClauseNumber,
+            Submitter=submitter,
+            Name=name,
+            Paper=file,
+            Type='blank',
+            project_id=project_id,
+        )
+        newPaper.save()
+    except Exception as e:
+        print(f"Error occurred while adding equipment {name}: {e}")
+        # 记录错误并向用户展示错误消息
+        messages.error(request, f"添加设备 {name} 时出错: {e}")
+    return redirect("test_detail", project_id=project_id)
 def join_in_comparison(request, project_id):
     if request.method == 'POST':
         comparison_id = request.POST.get('comparison_id')

@@ -36,7 +36,10 @@
     <a href="{% url 'test_standard' %}" class="btn btn-secondary mb-4">返回标准列表</a>
 
     <h2>{{ standard.StandardName }} - 项目列表</h2>
-
+    <form method="get" action="{% url 'test_search_project' standard.id %}">
+        <input type="text" name="query" placeholder="搜索...">
+        <button type="submit">Search</button>
+    </form>
     <!-- 项目列表 -->
     <table class="table table-bordered table-hover">
         <thead class="thead-light">

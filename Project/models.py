@@ -548,6 +548,8 @@ class Tutorial(models.Model):
     StandardName	TEXT(50)	标准名称
     StandardNumber	TEXT(50)	标准号
     ClauseNumber	TEXT(50)	标准下的条款号
+    Name            TEXT(50)    试卷名称
+    Submitter
     Paper           FILE        试卷文件
     Type            TEXT(50)    试卷类型    
 '''
@@ -558,8 +560,10 @@ class Paper(models.Model):
     StandardNumber = models.CharField(max_length=50, null=False)
     ClauseNumber = models.CharField(max_length=50, null=False)
 
+    Name = models.CharField(max_length=50, null=False)
     Paper = models.FileField(upload_to='Papers/')
     Type = models.CharField(max_length=50, null=False)
+    Submitter = models.CharField(max_length=50, null=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE)
 

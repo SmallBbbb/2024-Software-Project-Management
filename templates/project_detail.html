@@ -81,6 +81,9 @@
         <!-- 学习资料部分 -->
         <div id="person_tutorials" class="mt-4 sub-tab-content" style="display:none;">
             <h3>学习资料</h3>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadTutorialModal">
+                上传学习资料
+            </button>
             <table class="table table-bordered">
                 <tbody>
                 {% for tutorial in tutorials %}
@@ -101,6 +104,30 @@
                 {% endfor %}
                 </tbody>
             </table>
+        <div class="modal fade" id="uploadTutorialModal" tabindex="-1" role="dialog" aria-labelledby="uploadTutorialModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addEquipmentModalLabel">上传学习资料</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class = "modal-body">
+                            <form action="{% url 'upload_tutorial' project.id %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="tutorial_name">资料名称</label><br>
+                                    <input type="text" class="form-control-input" id="tutorial_name" name="tutorial_name"><br>
+                                    <label for="tutorial">上传教学视频(.MP4)</label>
+                                    <input type="file" class="form-control-file" id="tutorial_media" name="tutorial_media" accept="video/mp4"><br>
+                                    <button type="submit" class="btn-primary">提交</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- 考核试卷部分 -->
@@ -109,7 +136,44 @@
                 上传空白试卷
             </button>
             <table class="table table-bordered table-hover">
-
+                <thead class="thead-light">
+                <tr>
+                    <th>空白试卷</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for paper in papers %}
+                    <tr>
+                        <td>{{ paper.Name }}</td>
+                        <td>
+                            <form action="{% url 'delete_paper' project.id %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="paper_id" value="{{ paper.id }}">
+                                <button type="submit" class="btn btn-danger">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th>答卷</th>
+                    <th>作答者</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for answer in answers %}
+                    <tr>
+                        <td>{{ answer.Name }}</td>
+                        <td>{{ answer.Submitter }}</td>
+                        <td><a href="">下载</a> </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
             </table>
         </div>
         <div class="modal fade" id="uploadPaperModal" tabindex="-1" role="dialog" aria-labelledby="uploadPaperModalLabel" aria-hidden="true">
@@ -122,13 +186,13 @@
                         </button>
                     </div>
                     <div class = "modal-body">
-                        <form action="{% url 'upload_paper' project.id %}" method="post" enctype="multipart/form-data">
+                        <form action="{% url 'upload_blank_paper' project.id %}" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="paper_name">试卷名称</label><br>
-                                <input type="text" class="form-control-label" name="paper_name" id="paper_name"><br>
+                                <input type="text" class="form-control-label" name="paper_name" id="paper_name" required><br>
                                 <label for="paper_file">上传试卷</label>
-                                <input type="file" class="form-control-file" name="paper_file" id="paper_file">
+                                <input type="file" class="form-control-file" name="paper_file" id="paper_file" accept=".pdf, application/pdf" required>
                                 <button type="submit" class="btn btn-primary">提交</button>
                             </div>
                         </form>
