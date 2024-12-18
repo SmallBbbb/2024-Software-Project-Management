@@ -1,6 +1,7 @@
-
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+
 '''
 授权证书模型(Certification)
     ID                  INT         证书ID
@@ -146,17 +147,17 @@ class Project(models.Model):
 
 class TestStaff(models.Model):
 
-    Name = models.CharField(max_length=20, null=False, unique=True)
+    Name = models.CharField(max_length=20, null=False, unique=False)
     Category = models.CharField(max_length=50, null=False)
     Project = models.CharField(max_length=50, null=False)
     StandardName = models.CharField(max_length=50, null=False)
     StandardNumber = models.CharField(max_length=50, null=False)
     ClauseNumber = models.CharField(max_length=50, null=False)
-    TraFinTime = models.DateTimeField()
-    TraCertification = models.CharField(max_length=100, null=False, unique=True)
-    ExamTime = models.DateTimeField()
-    TestFile = models.CharField(max_length=100, null=False, unique=True)
-    AuthCertification = models.CharField(max_length=100, null=False, unique=True)
+    #TraFinTime = models.DateTimeField()
+    #TraCertification = models.CharField(max_length=100, null=False, unique=True)
+    #ExamTime = models.DateTimeField()
+    #TestFile = models.CharField(max_length=100, null=False, unique=True)
+    #AuthCertification = models.CharField(max_length=100, null=False, unique=True)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='projects1')
 

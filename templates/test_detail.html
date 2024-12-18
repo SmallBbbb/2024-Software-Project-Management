@@ -59,19 +59,18 @@
         <!-- 测试人员部分 -->
         <div id="person_testers" class="mt-4 sub-tab-content" style="display:none;">
             <h3>测试人员列表</h3>
+            <a href="{% url 'join_in_project' project.id %}" class="btn btn-secondary mb-4">参加项目</a>
             <table class="table table-bordered">
                 <thead class="thead-light">
                 <tr>
                     <th>测试人员</th>
-                    <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <!-- 假设测试人员数据是从 Django 后端传递的 -->
-                {% for tester in testers %}
+                {% for testStaff in testStaffs %}
                     <tr>
-                        <td>{{ tester.name }}</td>
-                        <td>操作按钮</td>
+                        <td>{{ testStaff.Name }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

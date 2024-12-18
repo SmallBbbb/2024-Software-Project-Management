@@ -4,7 +4,7 @@ import shutil
 
 import openpyxl
 from django.contrib.auth import authenticate, login
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, FileResponse
 # views.py
 from django.contrib import messages
 
@@ -69,6 +69,7 @@ def test_detail(request,project_id):
     comparisons = Comparison.objects.filter(project_id=project_id)
     papers = Paper.objects.filter(project_id=project_id, Submitter__isnull=True)
     answers = Paper.objects.filter(project_id=project_id, Submitter=request.user.username)
+    testStaffs = TestStaff.objects.filter(project_id=project_id)
     return render(request, 'test_detail.html', {'project': project,
                                                 'equipments': equipments,
                                                 'samples': samples,
@@ -76,6 +77,7 @@ def test_detail(request,project_id):
                                                 'comparisons': comparisons,
                                                 'papers': papers,
                                                 'answers': answers,
+                                                'testStaffs': testStaffs,
                                                 })
 
 
@@ -422,6 +424,7 @@ def project_detail(request, project_id):
     comparisons = Comparison.objects.filter(project_id=project_id)
     papers = Paper.objects.filter(project_id=project_id, Submitter__isnull=True)
     answers = Paper.objects.filter(project_id=project_id, Submitter__isnull=False)
+    testStaffs = TestStaff.objects.filter(project_id=project_id)
     return render(request, 'project_detail.html', {'project': project,
                                                    'equipments': equipments,
                                                    'samples': samples,
@@ -429,7 +432,21 @@ def project_detail(request, project_id):
                                                    'comparisons':comparisons,
                                                    'papers': papers,
                                                    'answers': answers,
+                                                   'testStaffs': testStaffs,
                                                    })
+def join_in_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    newTestStaff = TestStaff.objects.create(
+        Name=request.user.username,
+        Category=project.Category,
+        Project=project.Project,
+        StandardName=project.StandardName,
+        StandardNumber=project.StandardNumber,
+        ClauseNumber=project.ClauseNumber,
+        project=project
+    )
+    newTestStaff.save()
+    return redirect('test_detail', project_id)
 def upload_tutorial(request, project_id):
     if request.method == 'POST' and request.FILES.get('tutorial_media'):
         name = request.POST.get('tutorial_name')
@@ -457,6 +474,8 @@ def delete_tutorial(request, project_id):
     if request.method == 'POST':
         tutorial_id = request.POST.get('tutorial_id')
         tutorial = get_object_or_404(Tutorial, id=tutorial_id)
+        file_path = tutorial.Media.path
+        os.remove(file_path)
         tutorial.delete()
     return redirect("project_detail", project_id=project_id)
 def upload_blank_paper(request, project_id):
@@ -485,6 +504,8 @@ def delete_paper(request, project_id):
     if request.method == 'POST':
         paper_id = request.POST.get('paper_id')
         paper = Paper.objects.get(id=paper_id)
+        file_path = paper.Paper.path
+        os.remove(file_path)
         paper.delete()
     return redirect("project_detail", project_id=project_id)
 
@@ -515,9 +536,12 @@ def add_equipment(request, project_id):
             # 记录错误并向用户展示错误消息
             messages.error(request, f"添加设备 {equipment} 时出错: {e}")
     return redirect("project_detail", project_id = project_id)
-def show_equipment_detail(request, equipment_id):
-    equipment_detail = get_object_or_404(Equipment, id=equipment_id)
-    return render(request, {'equipment_detail': equipment_detail})
+def delete_equipment(request, project_id):
+    equipment = Equipment.objects.get(id=request.POST.get('equipment_id'))
+    file_path = equipment.Photo.path
+    os.remove(file_path)
+    equipment.delete()
+    return redirect("project_detail", project_id = project_id)
 
 def add_sample(request, project_id):
     if request.method == 'POST' :
@@ -539,7 +563,10 @@ def add_sample(request, project_id):
             # 记录错误并向用户展示错误消息
             messages.error(request, f"添加样品 {sample} 时出错: {e}")
     return redirect("project_detail", project_id = project_id)
-
+def delete_sample(request, project_id):
+    sample = Sample.objects.get(id=request.POST.get('sample_id'))
+    sample.delete()
+    return redirect("project_detail", project_id = project_id)
 def download_regulation(request, project_id):
     return redirect("project_detail", project_id=project_id)
 def create_comparison(request, project_id):
@@ -581,19 +608,25 @@ def cancel_comparison(request, project_id):
 
 #以下为测试人员可见页面相关视图函数
 def download_blank_paper(request, paper_id):
+    # 获取纸张对象，若不存在则返回 404 错误
     paper = get_object_or_404(Paper, id=paper_id)
+
     # 确定PDF文件的路径
-    file_path = paper.Paper.path
+    file_path = paper.Paper.path  # 确保这个路径是文件的绝对路径
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
-        return HttpResponse("File not found", status=404)
+        return HttpResponse("文件未找到", status=404)
 
-    # 打开文件并读取其内容
-    with open(file_path, 'rb') as fh:
-        response = HttpResponse(fh.read(), content_type="application/pdf")
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(paper.Paper.name)
-    return response
+    try:
+        # 使用 FileResponse 来处理文件下载
+        response = FileResponse(open(file_path, 'rb'), content_type="application/pdf")
+        # 设置下载文件的名称
+        response['Content-Disposition'] = f'attachment; filename="{paper.Paper.name}"'
+        return response
+    except Exception as e:
+        # 捕捉异常并返回错误信息
+        return HttpResponse(f"发生错误: {str(e)}", status=500)
 def upload_paper(request, project_id):
     name = request.POST.get('paper_name')
     file = request.FILES['paper_file']

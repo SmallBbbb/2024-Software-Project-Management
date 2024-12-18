@@ -63,15 +63,13 @@
                 <thead class="thead-light">
                 <tr>
                     <th>测试人员</th>
-                    <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <!-- 假设测试人员数据是从 Django 后端传递的 -->
-                {% for tester in testers %}
+                {% for testStaff in testStaffs %}
                     <tr>
-                        <td>{{ tester.name }}</td>
-                        <td>操作按钮</td>
+                        <td>{{ testStaff.Name }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -104,7 +102,7 @@
                 {% endfor %}
                 </tbody>
             </table>
-        <div class="modal fade" id="uploadTutorialModal" tabindex="-1" role="dialog" aria-labelledby="uploadTutorialModalLabel" aria-hidden="true">
+            <div class="modal fade" id="uploadTutorialModal" tabindex="-1" role="dialog" aria-labelledby="uploadTutorialModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -170,7 +168,7 @@
                     <tr>
                         <td>{{ answer.Name }}</td>
                         <td>{{ answer.Submitter }}</td>
-                        <td><a href="">下载</a> </td>
+                        <td><a href="{% url 'download_blank_paper' answer.id  %}">下载</a> </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -217,6 +215,7 @@
                 <th>生产厂家</th>
                 <th>设备图片</th>
                 <th>设备详情</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody>
@@ -224,8 +223,17 @@
                 <tr>
                     <td>{{ equipment.Equipment }}</td>
                     <td>{{ equipment.Manufacturer }}</td>
-                    <td><img src="{{ equipment.Photo.url }}" alt="设备图片" style="max-width: 100%; height: 500px;"></td>
-
+                    <td>
+                        <img src="{{ equipment.Photo.url }}" alt="设备图片" style="max-width: 100%; max-height: 200px; width: auto; height: auto;">
+                    </td>
+                    <td>{{ equipment.Detail }}</td>
+                    <td>
+                        <form action="{% url 'delete_equipment' project.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="equipment_id" value="{{ equipment.id }}">
+                            <button type="submit" class="btn btn-danger">删除</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -296,6 +304,7 @@
                 <th>规格型号</th>
                 <th>生产厂家</th>
                 <th>批号</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody>
@@ -305,6 +314,13 @@
                     <td>{{ sample.Specification }}</td>
                     <td>{{ sample.Manufacturer }}</td>
                     <td>{{ sample.BatchNumber }}</td>
+                    <td>
+                        <form action="{% url 'delete_sample' project.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="sample_id" value="{{ sample.id }}">
+                            <button type="submit" class="btn btn-danger">删除</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -363,16 +379,25 @@
                     <td>{{ comparison.StartDate }}</td>
                     <td>{{ comparison.State }}</td>
                     <td>
-                        <form action="{% url 'start_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
-                            <button type = "submit" class = "btn btn-primary">开始</button>
-                        </form>
-                        <form action="{% url 'cancel_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
-                            <button type = "submit" class = "btn btn-primary">删除</button>
-                        </form>
+                        {% load custom_filters %}
+                        {% if comparison.State|admin_show_comparison_state %}
+                            <form action="{% url 'cancel_comparison' project.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="comparison_id" value="{{ comparison.id }}">
+                                <button type="submit" class="btn btn-danger">取消</button>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'start_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
+                                <button type = "submit" class = "btn btn-primary">开始</button>
+                            </form>
+                            <form action="{% url 'cancel_comparison' project.id %}" class = "form-inline" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type = "hidden" name = "comparison_id" value = "{{ comparison.id }}">
+                                <button type = "submit" class = "btn btn-danger">删除</button>
+                            </form>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

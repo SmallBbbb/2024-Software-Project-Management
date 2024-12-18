@@ -28,14 +28,16 @@ urlpatterns = [
     path('project/<int:project_id>/upload_blank_paper', views.upload_blank_paper, name='upload_blank_paper'),
     path('project/<int:project_id>/delete_paper', views.delete_paper, name='delete_paper'),
     path('project/<int:project_id>/add_equipment', views.add_equipment, name='add_equipment'),
-    path('<int:equipment_id>/show_equipment_detail', views.show_equipment_detail, name='show_equipment_detail'),
+    path('project/<int:project_id>/delete_equipment', views.delete_equipment, name='delete_equipment'),
     path('project/<int:project_id>/add_sample', views.add_sample, name='add_sample'),
+    path('project/<int:project_id>/delete_sample', views.delete_sample, name='delete_sample'),
     path('project/<int:project_id>/download_regulation', views.download_regulation, name='download_regulation'),
     path('project/<int:project_id>/create_comparison', views.create_comparison, name='create_comparison'),
     path('<int:project_id>/start_comparison', views.start_comparison, name='start_comparison'),
     path('<int:project_id>/cancel_comparison', views.cancel_comparison, name='cancel_comparison'),
 
     #以下为测试人员可见页面相关url
+    path('<int:project_id>/join_in_project', views.join_in_project, name='join_in_project'),
     path('<int:project_id>/join_in_comparison', views.join_in_comparison, name='join_in_comparison'),
     path('download_blank_paper/<int:paper_id>', views.download_blank_paper, name='download_blank_paper'),
     path('<int:project_id>/upload_paper', views.upload_paper, name='upload_paper'),
